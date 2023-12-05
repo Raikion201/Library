@@ -1,0 +1,3 @@
+81,Lolita,Vladimir Nabokov,Classics,978-0679723165,10,True,Not borrowed
+
+empty

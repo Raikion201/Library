@@ -1,0 +1,3 @@
+77,The Divine Comedy,Dante Alighieri,Classics,978-0141197494,10,True,Not borrowed
+
+empty

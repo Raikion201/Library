@@ -1,0 +1,3 @@
+85,Anna Karenina,Leo Tolstoy,Classics,978-0143035008,10,True,Not borrowed
+
+empty

@@ -1,0 +1,3 @@
+68,Vagabonding,Rolf Potts,Travel,978-0812992182,10,True,Not borrowed
+
+empty

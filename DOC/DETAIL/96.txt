@@ -1,0 +1,3 @@
+96,War and Peace,Leo Tolstoy,Classics,978-0140447934,10,True,Not borrowed
+
+empty

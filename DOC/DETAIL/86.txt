@@ -1,0 +1,3 @@
+86,Les Misérables,Victor Hugo,Classics,978-0143109459,10,True,Not borrowed
+
+empty

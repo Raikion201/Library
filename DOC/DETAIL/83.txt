@@ -1,0 +1,3 @@
+83,The Iliad,Homer,Classics,978-0140275360,10,True,Not borrowed
+
+empty

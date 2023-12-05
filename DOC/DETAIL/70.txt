@@ -1,0 +1,3 @@
+70,Zen and the Art of Motorcycle Maintenance,Robert M. Pirsig,Philosophy,978-0060839871,10,True,Not borrowed
+
+empty

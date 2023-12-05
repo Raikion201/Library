@@ -1,0 +1,3 @@
+91,The Bell Jar,Sylvia Plath,Classics,978-0060837020,10,True,Not borrowed
+
+empty
