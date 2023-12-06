@@ -12,13 +12,70 @@ namespace Library
     {
         static void Main(string[] args)
         {
-            string defaultPath = "../../../DOC/STORE/Store.csv";
-            var books = BookReader.ReadBooksFromCSV(defaultPath);
+            // Relative path to the CSV files
+            // When run the program it will load all data before the menu is show
+            string storePath = @"D:/coding/Library/Library/DOC/STORE/Store.csv";
+            string borrowerPath = @"D:/coding/Library/Library/DOC/BORROWER/BorrowerInfo.csv";
+            string borrowHistoryPath = @"D:/coding/Library/Library/DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
+            string returnHistoryPath = @"D:/coding/Library/Library/DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
 
-            foreach (var book in books)
+            // Prepare data
+            var books = Book.ReadBooksFromCSV(storePath);
+            var borrowers = Borrower.ReadBorrowersFromCSV(borrowerPath);
+
+            // The menu
+            Console.WriteLine("Welcome to the Library Management System!");
+            bool exit = false;
+            do
             {
-                Console.WriteLine($"{book.ID,-5} {book.Title,-90} {book.Author,-25} {book.Genre,-20} {book.ISBN,-15} {book.Quantity,-5} {book.Availability,-6} {book.BorrowStatus}");
-            }
+                Console.WriteLine("===== MENU =====");
+                Console.WriteLine("1. Librarian");
+                Console.WriteLine("2. Borrower");
+                Console.WriteLine("0. Exit");
+                Console.WriteLine("Enter your choice:");
+
+                int choice;
+                if (int.TryParse(Console.ReadLine(), out choice))
+                {
+                    switch (choice)
+                    {
+                        case 1:
+                            Console.Clear();
+                            LibrarianMenu();
+                            break;
+
+                        case 2:
+                            Console.Clear();
+                            BorrowerMenu();
+                            break;
+
+                        case 0:
+                            Console.WriteLine("Exiting the program...");
+                            exit = true;
+                            break;
+
+                        default:
+                            Console.WriteLine("Invalid choice. Please enter a number between 1 and 5.");
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a number.");
+                }
+
+                Console.WriteLine();
+            } while (!exit);
+        }
+
+        static void LibrarianMenu() 
+        {
+            Console.WriteLine("===== LIBRARIAN MENU =====");
+        }
+
+        static void BorrowerMenu() 
+        {
+            Console.WriteLine("===== BORROWER MENU =====");
         }
     }
-}
+} 
