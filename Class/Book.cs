@@ -14,8 +14,8 @@ namespace Library
 		public Genres Genre { get; set; }
 		public string ISBN { get; set; }
 		public int Quantity { get; set; }
-		public bool Availability { get; set; }
-		public bool BorrowStatus { get; set; }
+		public bool Availability { get; set; } // true if the book is available to borrow, false if not (when quantity below 0 or the book is lost)
+		public bool BorrowStatus { get; set; } // true if the book is borrowed by someone, false if not
 		public List<Borrower> Borrowers { get; set; }
 
 		public Book(string id, string title, string author, Genres genre, string isbn, int quantity, bool available, bool borrowStatus)
@@ -28,9 +28,7 @@ namespace Library
 			Quantity = quantity;
 			Availability = available;
 			BorrowStatus = borrowStatus;
-
-			// If someone has borrowed this book, find all borrowers
-			if (borrowStatus) Borrowers = FindBorrowersByID(id);
+			Borrowers = new List<Borrower>();
 		}
 
 		// Read all book data from a CSV file
@@ -65,22 +63,6 @@ namespace Library
 			}
 
 			return books;
-		}
-
-		// Find all borrowers of a book by matched their ID with bookID
-		private List<Borrower> FindBorrowersByID(string bookID)
-		{
-			List<Borrower> allBorrowers = Borrower.ReadBorrowersFromCSV(@"D:\coding\Library\Library\DOC\BORROWER\BorrowerInfo.csv");
-			List<Borrower> foundBorrowers = new List<Borrower>();
-
-			foreach (Borrower borrower in allBorrowers)
-			{
-				if (borrower.BorrowerId.ToString() == bookID)
-				{
-					foundBorrowers.Add(borrower);
-				}
-			}
-			return foundBorrowers;
 		}
 	}
 }
