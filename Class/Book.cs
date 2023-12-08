@@ -18,6 +18,10 @@ namespace Library
 		public bool BorrowStatus { get; set; } // true if the book is borrowed by someone, false if not
 		public List<Borrower> Borrowers { get; set; }
 
+		// Default constructor
+		public Book(){}
+
+		// Constructor with parameters
 		public Book(string id, string title, string author, Genres genre, string isbn, int quantity, bool available, bool borrowStatus)
 		{
 			ID = id;
@@ -63,6 +67,30 @@ namespace Library
 			}
 
 			return books;
+		}
+
+		// Display a book's information
+		public void DisplayBookInfo(Book book)
+		{
+			Console.WriteLine($"{book.ID,-5} {book.Title,-90} {book.Author,-30} {book.Genre,-18} {book.ISBN,-15} {book.Quantity,-10} {book.Availability,-12} {book.BorrowStatus,-10}");
+		}
+
+		// Get a book by its ID
+		public static Book GetBookById(string bookId)
+		{
+			List<Book> books = new List<Book>(); 
+
+			// Find the book with the given ID
+			Book book = books.FirstOrDefault(b => b.ID == bookId);
+			
+			return book; // Return the found Book object or null if not found
+		}
+
+		// Get a book by its title
+		public static Book GetBookByTitle(string bookTitle, List<Book> books)
+		{
+			Book foundBook = books.FirstOrDefault(book => book.Title == bookTitle);
+			return foundBook; // Return the found Book object or null if not found
 		}
 	}
 }
