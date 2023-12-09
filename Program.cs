@@ -5,6 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.VisualBasic.FileIO;
 using System.IO;
 using System.Globalization;
+using Library.Class.TFIDF;
+
+
+
+
 
 namespace Library
 {
@@ -14,12 +19,17 @@ namespace Library
         {
             // Relative path to the CSV files
             // When run the program it will load all data before the menu is show
-            string storePath = @"D:/coding/Library/Library/DOC/STORE/Store.csv";
-            string borrowerPath = @"D:/coding/Library/Library/DOC/BORROWER/BorrowerInfo.csv";
-            string borrowHistoryPath = @"D:/coding/Library/Library/DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
-            string returnHistoryPath = @"D:/coding/Library/Library/DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
+            string storePath = @"C:/Users/ADMIN/Desktop/c#learning/Library/DOC/STORE/Store.csv";
+            string borrowerPath = @"C:/Users/ADMIN/Desktop/c#learning/Library/DOC/BORROWER/BorrowerInfo.csv";
+            string borrowHistoryPath = @"C:/Users/ADMIN/Desktop/c#learning/Library/DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
+            string returnHistoryPath = @"C:/Users/ADMIN/Desktop/c#learning/Library/DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
+            string documentsPath = "../../../DOC/DETAIL/";
 
             // Prepare data
+            var e = new Execution();
+            var documents = e.ProcessDocuments(documentsPath);
+            var tfidf = new TFIDF(documents);
+            var documentVectors = tfidf.Transform();
             var books = Book.ReadBooksFromCSV(storePath);
             var borrowers = Borrower.ReadBorrowersFromCSV(borrowerPath);
             var borrowLogs = HistoryLog.ReadBorrowLogFromCSV(borrowHistoryPath, borrowers, books);
@@ -35,6 +45,7 @@ namespace Library
                 Console.WriteLine("===== MENU =====");
                 Console.WriteLine("1. Librarian");
                 Console.WriteLine("2. Borrower");
+                Console.WriteLine("3. Search");
                 Console.WriteLine("0. Exit");
                 Console.WriteLine("Enter your choice:");
 
@@ -52,7 +63,10 @@ namespace Library
                             Console.Clear();
                             BorrowerMenu(books, borrowers, borrowLogs, returnLogs);
                             break;
-
+                        case 3:
+                            Console.Clear();
+                            SearchMenu(books,tfidf,documentVectors);
+                            break;
                         case 0:
                             Console.Clear();
                             exit = true;
@@ -74,10 +88,10 @@ namespace Library
         /// The librarian menu
         /// </summary>
         /// <param name="books"></param>
-        static void LibrarianMenu(List<Book> books, List<Borrower> borrowers, List<HistoryLog> borrowLogs, List<HistoryLog> returnLogs) 
-        {   
+        static void LibrarianMenu(List<Book> books, List<Borrower> borrowers, List<HistoryLog> borrowLogs, List<HistoryLog> returnLogs)
+        {
             bool exit = false;
-            while (!exit) 
+            while (!exit)
             {
                 // The first librarian menu box
                 Console.Clear();
@@ -88,9 +102,9 @@ namespace Library
                 Console.WriteLine("0. Return to main menu");
                 Console.WriteLine("Enter your choice:");
                 int choice;
-                if (int.TryParse(Console.ReadLine(), out choice)) 
+                if (int.TryParse(Console.ReadLine(), out choice))
                 {
-                    switch (choice) 
+                    switch (choice)
                     {
                         // Data interaction
                         case 1:
@@ -102,9 +116,9 @@ namespace Library
                             Console.WriteLine("3. Display transaction history");
                             Console.WriteLine("0. Return to librarian menu");
                             Console.WriteLine("Enter your choice:");
-                            if (int.TryParse(Console.ReadLine(), out choice)) 
-                            {   
-                                switch (choice) 
+                            if (int.TryParse(Console.ReadLine(), out choice))
+                            {
+                                switch (choice)
                                 {
                                     // Display the library
                                     case 1:
@@ -113,7 +127,7 @@ namespace Library
                                         Console.WriteLine("Press 1 to start sort the library. Press any key to return to librarian menu.");
                                         Console.WriteLine("Enter your choice: ");
                                         char userInput = Console.ReadKey().KeyChar;
-                                        if (userInput == '1') 
+                                        if (userInput == '1')
                                         {
                                             bool exitSort = false;
                                             do
@@ -129,9 +143,9 @@ namespace Library
                                                 Console.WriteLine("7. Sort by BorrowStatus");
                                                 Console.WriteLine("0. Return to librarian menu");
                                                 Console.WriteLine("Enter your choice:");
-                                                if (int.TryParse(Console.ReadLine(), out choice)) 
-                                                {   
-                                                    switch (choice)     
+                                                if (int.TryParse(Console.ReadLine(), out choice))
+                                                {
+                                                    switch (choice)
                                                     {
                                                         // Sort by ID
                                                         case 1:
@@ -141,7 +155,7 @@ namespace Library
                                                             librarian.DisplayLibrary(books);
                                                             Console.ReadKey();
                                                             break;
-                                                        
+
                                                         // Sort by Title    
                                                         case 2:
                                                             Console.Clear();
@@ -231,47 +245,47 @@ namespace Library
 
                                     // Display transaction history
                                     case 3:
-                                    Console.Clear();
-                                    HistoryLog historyLog = new HistoryLog();
-                                    Console.WriteLine("===== DISPLAY TRANSACTION HISTORY =====");
-                                    Console.WriteLine("1. Display borrowed book history");
-                                    Console.WriteLine("2. Display return book history");
-                                    Console.WriteLine("0. Return to librarian menu");
-                                    Console.WriteLine("Enter your choice:");
+                                        Console.Clear();
+                                        HistoryLog historyLog = new HistoryLog();
+                                        Console.WriteLine("===== DISPLAY TRANSACTION HISTORY =====");
+                                        Console.WriteLine("1. Display borrowed book history");
+                                        Console.WriteLine("2. Display return book history");
+                                        Console.WriteLine("0. Return to librarian menu");
+                                        Console.WriteLine("Enter your choice:");
 
-                                    if (int.TryParse(Console.ReadLine(), out choice))
-                                    {
-                                        switch (choice)
+                                        if (int.TryParse(Console.ReadLine(), out choice))
                                         {
-                                            case 1:
-                                                Console.Clear();
-                                                Console.WriteLine("===== BORROWED BOOK HISTORY =====");
-                                                historyLog.DisplayBorrowedBooks(borrowLogs);
-                                                Console.ReadKey();
-                                                break;
+                                            switch (choice)
+                                            {
+                                                case 1:
+                                                    Console.Clear();
+                                                    Console.WriteLine("===== BORROWED BOOK HISTORY =====");
+                                                    historyLog.DisplayBorrowedBooks(borrowLogs);
+                                                    Console.ReadKey();
+                                                    break;
 
-                                            case 2:
-                                                Console.Clear();
-                                                Console.WriteLine("===== RETURN BOOK HISTORY =====");
-                                                historyLog.DisplayReturnedBooks(returnLogs);
-                                                Console.ReadKey();
-                                                break;
+                                                case 2:
+                                                    Console.Clear();
+                                                    Console.WriteLine("===== RETURN BOOK HISTORY =====");
+                                                    historyLog.DisplayReturnedBooks(returnLogs);
+                                                    Console.ReadKey();
+                                                    break;
 
-                                            case 0:
-                                                Console.Clear();
-                                                break;
+                                                case 0:
+                                                    Console.Clear();
+                                                    break;
 
-                                            default:
-                                                Console.WriteLine("Invalid choice. Please enter a valid number.");
-                                                break;
+                                                default:
+                                                    Console.WriteLine("Invalid choice. Please enter a valid number.");
+                                                    break;
+                                            }
                                         }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Invalid input. Please enter a valid number.");
-                                    }
-                                    break;
-                                    
+                                        else
+                                        {
+                                            Console.WriteLine("Invalid input. Please enter a valid number.");
+                                        }
+                                        break;
+
                                     // Return to librarian menu
                                     case 0:
                                         Console.Clear();
@@ -288,7 +302,7 @@ namespace Library
                         case 2:
                             // The third librarian menu box
                             Console.Clear();
-                            
+
                             Console.WriteLine("===== DATA MANIPULATION =====");
                             Console.WriteLine("1. Add a book");
                             Console.WriteLine("2. Delete a book");
@@ -298,16 +312,16 @@ namespace Library
                             Console.WriteLine("6. Edit a borrower");
                             Console.WriteLine("0. Return to librarian menu");
                             Console.WriteLine("Enter your choice:");
-                            if (int.TryParse(Console.ReadLine(), out choice)) 
-                            {   
-                                switch (choice) 
+                            if (int.TryParse(Console.ReadLine(), out choice))
+                            {
+                                switch (choice)
                                 {
                                     // Add a book
                                     case 1:
                                         Console.Clear();
                                         librarian.AddBook(books);
                                         break;
-                                    
+
                                     // Delete a book
                                     case 2:
                                         Console.Clear();
@@ -336,7 +350,7 @@ namespace Library
                                     case 6:
                                         Console.Clear();
                                         librarian.EditBorrower(borrowers);
-                                        break;  
+                                        break;
 
                                     // Return to librarian menu
                                     case 0:
@@ -371,13 +385,13 @@ namespace Library
         /// The borrower menu
         /// </summary>
         /// <param name="books"></param>
-        static void BorrowerMenu(List<Book> books, List<Borrower> borrowers, List<HistoryLog> borrowLogs, List<HistoryLog> returnLogs) 
+        static void BorrowerMenu(List<Book> books, List<Borrower> borrowers, List<HistoryLog> borrowLogs, List<HistoryLog> returnLogs)
         {
             // Relative path to the CSV files
             string borrowHistoryPath = @"D:/coding/Library/Library/DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
             string returnHistoryPath = @"D:/coding/Library/Library/DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
             bool exit = false;
-            while (!exit) 
+            while (!exit)
             {
                 // The first borrower menu box
                 Console.Clear();
@@ -389,9 +403,9 @@ namespace Library
                 Console.WriteLine("0. Return to main menu");
                 Console.WriteLine("Enter your choice:");
                 int choice;
-                if (int.TryParse(Console.ReadLine(), out choice)) 
+                if (int.TryParse(Console.ReadLine(), out choice))
                 {
-                    switch (choice) 
+                    switch (choice)
                     {
                         // Display the library
                         case 1:
@@ -399,7 +413,7 @@ namespace Library
                             borrower.DisplayLibrary(books);
                             Console.ReadKey();
                             break;
-                        
+
                         // Borrow book
                         case 2:
                             Console.Clear();
@@ -409,7 +423,7 @@ namespace Library
                             bool borrowerExists = borrowers.Any(borrower => borrower.Name == borrowerName);
 
                             if (borrowerExists)
-                            {   
+                            {
                                 bool borrowerExits = false;
                                 while (!borrowerExits)
                                 {
@@ -424,24 +438,24 @@ namespace Library
 
                                     if (bookToBorrow != null)
                                     {
-                                            if (bookToBorrow.Availability)
+                                        if (bookToBorrow.Availability)
+                                        {
+                                            borrowerToBorrow.BorrowBook(borrowerToBorrow, bookToBorrow);
+                                            Console.WriteLine("Borrowed successfully!");
+                                            HistoryLog historyLog = new HistoryLog(borrowerToBorrow, bookToBorrow, DateTime.Now, DateTime.Now.AddDays(1));
+                                            historyLog.ExportBorrowLogToCSV(borrowHistoryPath);
+                                            Console.WriteLine(" ");
+                                            Console.WriteLine("Press 1 to borrow another book. Press any key to return to borrower menu.");
+                                            char userInput = Console.ReadKey().KeyChar;
+                                            if (userInput != '1')
                                             {
-                                                borrowerToBorrow.BorrowBook(borrowerToBorrow, bookToBorrow);
-                                                Console.WriteLine("Borrowed successfully!");
-                                                HistoryLog historyLog = new HistoryLog(borrowerToBorrow, bookToBorrow, DateTime.Now, DateTime.Now.AddDays(1));
-                                                historyLog.ExportBorrowLogToCSV(borrowHistoryPath);
-                                                Console.WriteLine(" ");
-                                                Console.WriteLine("Press 1 to borrow another book. Press any key to return to borrower menu.");
-                                                char userInput = Console.ReadKey().KeyChar;
-                                                if (userInput != '1')
-                                                {
-                                                    borrowerExits = true;
-                                                }
+                                                borrowerExits = true;
                                             }
-                                            else
-                                            {
-                                                Console.WriteLine("This book is not available.");
-                                            }
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("This book is not available.");
+                                        }
                                     }
                                     else
                                     {
@@ -452,7 +466,7 @@ namespace Library
                             else
                             {
                                 Console.WriteLine("Borrower not found. Please ask librarian to register first.");
-                            }     
+                            }
                             Console.ReadKey();
                             break;
 
@@ -534,5 +548,20 @@ namespace Library
                 }
             }
         }
+        static void SearchMenu(List<Book> books, TFIDF tfidf,double[][] documentVectors)
+        {
+            var borrower = new Borrower();
+            // Use LINQ to find the books with the same IDs
+            // Convert the result to an array
+            Console.WriteLine("Enter your search : ");
+            string query = Console.ReadLine();
+            var searchResults = TFIDF.Search(query, documentVectors, tfidf);
+            var selectedBooks = books.Where(book => searchResults.Contains(int.Parse(book.ID)));
+            List<Book> results = selectedBooks.ToList();
+            borrower.DisplayLibrary(results);
+            Console.ReadLine();
+
+        }
     }
-} 
+
+}
