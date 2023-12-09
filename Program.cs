@@ -6,10 +6,7 @@ using Microsoft.VisualBasic.FileIO;
 using System.IO;
 using System.Globalization;
 using Library.Class.TFIDF;
-
-
-
-
+using System.Formats.Tar;
 
 namespace Library
 {
@@ -19,11 +16,21 @@ namespace Library
         {
             // Relative path to the CSV files
             // When run the program it will load all data before the menu is show
-            string storePath = @"C:/Users/ADMIN/Desktop/c#learning/Library/DOC/STORE/Store.csv";
-            string borrowerPath = @"C:/Users/ADMIN/Desktop/c#learning/Library/DOC/BORROWER/BorrowerInfo.csv";
-            string borrowHistoryPath = @"C:/Users/ADMIN/Desktop/c#learning/Library/DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
-            string returnHistoryPath = @"C:/Users/ADMIN/Desktop/c#learning/Library/DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
-            string documentsPath = "../../../DOC/DETAIL/";
+            // For Visual Studio Code user only
+            string rootPath = @"D:/coding/Library/Library/";
+            string storePath = Path.Combine(rootPath, "DOC/STORE/Store.csv");
+            string borrowerPath = Path.Combine(rootPath, "DOC/BORROWER/BorrowerInfo.csv");
+            string borrowHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/BorrowHistory.xls");
+            string returnHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/ReturnHistory.xls");
+            string documentsPath = Path.Combine(rootPath, "DOC/DETAIL/");
+
+            // For Visual Studio users
+            // When use remember to comment code above
+            // string storePath = "../../../DOC/STORE/Store.csv";
+            // string borrowerPath = "../../../DOC/BORROWER/BorrowerInfo.csv";
+            // string borrowHistoryPath = "../../../DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
+            // string returnHistoryPath = "../../../DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
+            // string documentsPath = "../../../DOC/DETAIL/";
 
             // Prepare data
             var e = new Execution();
@@ -34,6 +41,15 @@ namespace Library
             var borrowers = Borrower.ReadBorrowersFromCSV(borrowerPath);
             var borrowLogs = HistoryLog.ReadBorrowLogFromCSV(borrowHistoryPath, borrowers, books);
             var returnLogs = HistoryLog.ReadReturnLogFromCSV(returnHistoryPath, borrowers, books);
+            
+            // Update borrowed books for each borrower
+            // Because when we turn off program, the borrowed books of each borrower will be reset to null
+            // So we need to update it again, make sure we always keep the data
+            foreach (var borrower in borrowers)
+            {   
+                Borrower newBorrower = new Borrower();
+                newBorrower.UpdateBorrowedBooksFromCSV(borrowHistoryPath, returnHistoryPath, books, borrower);
+            }
 
             // The menu
             Console.WriteLine("Welcome to the Library Management System!");
@@ -63,12 +79,50 @@ namespace Library
                             Console.Clear();
                             BorrowerMenu(books, borrowers, borrowLogs, returnLogs);
                             break;
+
                         case 3:
                             Console.Clear();
-                            SearchMenu(books, tfidf, documentVectors);
+                            Console.WriteLine("===== SEARCH OPTION =====");
+                            Console.WriteLine("1. Search by keyword");
+                            Console.WriteLine("2. Search by content summary");
+                            Console.WriteLine("0. Return to librarian menu");
+                            Console.WriteLine("Enter your choice: ");
+                            int searchChoice;
+                            if (int.TryParse(Console.ReadLine(), out searchChoice))
+                            {
+                                switch (searchChoice)
+                                {
+                                    case 1:
+                                        SearchBooks(books);
+                                        break;
+
+                                    case 2:
+                                        SearchSummary(books, tfidf, documentVectors);
+                                        break;
+
+                                    case 0:
+                                        Console.Clear();
+                                        break;
+
+                                    default:
+                                        Console.WriteLine("Invalid choice. Please enter a valid number.");
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input. Please enter a valid number.");
+                            }
                             break;
+
                         case 0:
+                            // Exit the program
+                            // And save all data to CSV files
                             Console.Clear();
+                            User user = new User();
+                            books = user.SortBooks(books, "ID").ToList();
+                            Book.WriteBooksToCSV(books, storePath);
+                            Borrower.WriteBorrowersToCSV(borrowers, borrowerPath);
                             exit = true;
                             break;
 
@@ -124,7 +178,7 @@ namespace Library
                                     case 1:
                                         Console.Clear();
                                         librarian.DisplayLibrary(books);
-                                        Console.WriteLine("Press 1 to start sort the library. Press any key to return to librarian menu.");
+                                        Console.WriteLine("\nPress 1 to start sort the library.\nPress any key to return to librarian menu.");
                                         Console.WriteLine("Enter your choice: ");
                                         char userInput = Console.ReadKey().KeyChar;
                                         if (userInput == '1')
@@ -224,7 +278,11 @@ namespace Library
                                                 {
                                                     Console.WriteLine("Invalid input. Please enter a valid number.");
                                                 }
-                                            } while (!exitSort);
+                                            } while (!exitSort);                                    
+                                        }
+                                        else
+                                        {
+                                            Console.Clear();
                                         }
                                         break;
 
@@ -250,6 +308,8 @@ namespace Library
                                         Console.WriteLine("===== DISPLAY TRANSACTION HISTORY =====");
                                         Console.WriteLine("1. Display borrowed book history");
                                         Console.WriteLine("2. Display return book history");
+                                        Console.WriteLine("3. Display transaction history by keyword");
+                                        Console.WriteLine("4. Display late return");
                                         Console.WriteLine("0. Return to librarian menu");
                                         Console.WriteLine("Enter your choice:");
 
@@ -268,6 +328,97 @@ namespace Library
                                                     Console.Clear();
                                                     Console.WriteLine("===== RETURN BOOK HISTORY =====");
                                                     historyLog.DisplayReturnedBooks(returnLogs);
+                                                    Console.ReadKey();
+                                                    break;
+                                                
+                                                case 3:
+                                                    bool exitLogSearch = false;
+                                                    do
+                                                    {
+                                                        Console.Clear();
+                                                        Console.WriteLine("===== SEARCH TRANSACTION HISTORY BY KEYWORD =====");
+                                                        Console.WriteLine("1. By borrower name");
+                                                        Console.WriteLine("2. By book title");
+                                                        Console.WriteLine("3. By date");
+                                                        Console.WriteLine("0. Return to librarian menu");
+                                                        Console.WriteLine("Enter your choice:");
+                                                        if (int.TryParse(Console.ReadLine(), out choice))
+                                                        {
+                                                            switch (choice)
+                                                            {
+                                                                case 1:
+                                                                    Console.Clear();
+                                                                    bool exitSearch = false;
+                                                                    do
+                                                                    {
+                                                                    Console.WriteLine("Enter borrower name: ");
+                                                                    string borrowerName = Console.ReadLine();
+                                                                    historyLog.DisplayLogsByBorrower(borrowLogs, borrowerName);
+                                                                    Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
+                                                                    userInput = Console.ReadKey().KeyChar;
+                                                                    if (userInput != '1')
+                                                                        exitSearch = true;
+                                                                    } while(!exitSearch);
+                                                                    break;
+
+                                                                case 2:
+                                                                    Console.Clear();
+                                                                    exitSearch = false;
+                                                                    do
+                                                                    {
+                                                                    Console.WriteLine("Enter book title: ");
+                                                                    string bookTitle = Console.ReadLine();
+                                                                    historyLog.DisplayLogsByBookTitle(borrowLogs, bookTitle);
+                                                                    Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
+                                                                    userInput = Console.ReadKey().KeyChar;
+                                                                    if (userInput != '1')
+                                                                        exitSearch = true;
+                                                                    } while(!exitSearch);
+                                                                    break;
+
+                                                                case 3:
+                                                                    Console.Clear();
+                                                                    exitSearch = false;
+                                                                    do
+                                                                    {
+                                                                    Console.WriteLine("Enter date (dd/MM/yyyy): ");
+                                                                    string dateString = Console.ReadLine();
+                                                                    if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                                                                    {
+                                                                        historyLog.DisplayLogsByDate(borrowLogs, date);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        Console.WriteLine("Invalid date format. Please enter date in the format dd/MM/yyyy.");
+                                                                    }
+                                                                    Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
+                                                                    userInput = Console.ReadKey().KeyChar;
+                                                                    if (userInput != '1')
+                                                                        exitSearch = true;
+                                                                    } while(!exitSearch);
+                                                                    break;
+
+                                                                case 0:
+                                                                    Console.Clear();
+                                                                    exitLogSearch = true;
+                                                                    break;
+
+                                                                default:
+                                                                    Console.WriteLine("Invalid choice. Please enter a valid number.");
+                                                                    break;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            Console.WriteLine("Invalid input. Please enter a valid number.");
+                                                        }
+                                                    } while (!exitLogSearch);
+                                                    break;
+
+                                                case 4:
+                                                    Console.Clear();
+                                                    Console.WriteLine("===== LATE RETURN =====");
+                                                    historyLog.DisplayLateReturn(borrowLogs, returnLogs);
                                                     Console.ReadKey();
                                                     break;
 
@@ -325,7 +476,9 @@ namespace Library
                                     // Delete a book
                                     case 2:
                                         Console.Clear();
-                                        librarian.DeleteBook(books);
+                                        Console.WriteLine("Enter the book's title to delete: ");
+                                        string bookTitle = Console.ReadLine();
+                                        librarian.DeleteBook(books, bookTitle);
                                         break;
 
                                     // Edit a book
@@ -441,7 +594,6 @@ namespace Library
                                         if (bookToBorrow.Availability)
                                         {
                                             borrowerToBorrow.BorrowBook(borrowerToBorrow, bookToBorrow);
-                                            Console.WriteLine("Borrowed successfully!");
                                             HistoryLog historyLog = new HistoryLog(borrowerToBorrow, bookToBorrow, DateTime.Now, DateTime.Now.AddDays(1));
                                             historyLog.ExportBorrowLogToCSV(borrowHistoryPath);
                                             Console.WriteLine(" ");
@@ -481,49 +633,37 @@ namespace Library
 
                             if (selectedBorrower != null)
                             {
-                                // Check if the borrower has any borrowing history
-                                if (selectedBorrower.HistoryLog != null)
+                                if (selectedBorrower.BorrowedBooks.Any())
                                 {
-                                    List<HistoryLog> borrowedBooks = selectedBorrower.HistoryLog.ToList();
-
-                                    if (borrowedBooks.Any())
+                                    Console.WriteLine("List of books borrowed by the user:");
+                                    foreach (var book in selectedBorrower.BorrowedBooks)
                                     {
-                                        Console.WriteLine("List of books borrowed by the user:");
-                                        foreach (var record in borrowedBooks)
-                                        {
-                                            Console.WriteLine($"Book ID: {record.Book.ID}, Title: {record.Book.Title}");
-                                        }
+                                        Console.WriteLine($"Book ID: {book.ID}, Title: {book.Title}");
+                                    }
 
-                                        Console.Write("Enter the ID of the book to return: ");
-                                        if (int.TryParse(Console.ReadLine(), out int bookIdToReturn))
-                                        {
-                                            var bookToReturn = borrowedBooks.FirstOrDefault(log => log.Book.ID.ToString() == bookIdToReturn.ToString())?.Book;
+                                    Console.Write("Enter the ID of the book to return: ");
+                                    if (int.TryParse(Console.ReadLine(), out int bookIdToReturn))
+                                    {
+                                        var bookToReturn = selectedBorrower.BorrowedBooks.FirstOrDefault(book => book.ID == bookIdToReturn.ToString());
 
-                                            if (bookToReturn != null)
-                                            {
-                                                selectedBorrower.ReturnBook(selectedBorrower, bookToReturn);
-                                                Console.WriteLine("Book returned successfully!");
-                                                HistoryLog historyLog = new HistoryLog(selectedBorrower, bookToReturn, DateTime.Now, DateTime.Now.AddDays(1));
-                                                historyLog.ExportReturnLogToCSV(returnHistoryPath);
-                                            }
-                                            else
-                                            {
-                                                Console.WriteLine("Invalid book ID or book not found in the borrowed list of the selected borrower.");
-                                            }
+                                        if (bookToReturn != null)
+                                        {
+                                            selectedBorrower.ReturnBook(selectedBorrower, bookToReturn);
+                                            // Update history log or other necessary actions here
                                         }
                                         else
                                         {
-                                            Console.WriteLine("Invalid input. Please enter a valid book ID.");
+                                            Console.WriteLine("Invalid book ID or book not found in the borrowed list of the selected borrower.");
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("The selected borrower hasn't borrowed any books.");
+                                        Console.WriteLine("Invalid input. Please enter a valid book ID.");
                                     }
                                 }
                                 else
                                 {
-                                    Console.WriteLine("No borrowing history available for the selected borrower.");
+                                    Console.WriteLine("The selected borrower hasn't borrowed any books.");
                                 }
                             }
                             else
@@ -548,31 +688,62 @@ namespace Library
                 }
             }
         }
-        static void SearchMenu(List<Book> books, TFIDF tfidf, double[][] documentVectors)
+
+        // Search books by keyword
+        static void SearchBooks(List<Book> books) 
+        {
+            Console.Clear();
+            bool exitSearch = false;
+            Librarian librarian = new Librarian();
+            char userInput;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("===== SEARCH BY KEYWORD =====");
+                Console.WriteLine("Enter your keyword : ");
+                string query = Console.ReadLine();
+                List<Book> foundBooks = librarian.SearchBooks(books, query);
+                librarian.DisplayLibrary(foundBooks);
+                Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
+                userInput = Console.ReadKey().KeyChar;
+                if (userInput != '1')
+                    exitSearch = true;
+            } while (!exitSearch);
+        }
+        
+        // Search books by content summary
+        static void SearchSummary(List<Book> books, TFIDF tfidf, double[][] documentVectors)
         {
             var borrower = new Borrower();
             // Use LINQ to find the books with the same IDs
             // Convert the result to an array
-            Console.WriteLine("Enter your search : ");
-            string query = Console.ReadLine();
-            List<Book> isbnBook = books.Where(x => x.ISBN.Equals(query)).ToList();
-            if (isbnBook.Count() > 0 )
+
+            Console.Clear();
+            bool exitSearch = false;
+            char userInput;
+            do
             {
-                borrower.DisplayLibrary(isbnBook);
-                Console.ReadLine();
-
-            }
-            else
-            {
-                var searchResults = TFIDF.Search(query, documentVectors, tfidf);
-                var selectedBooks = books.Where(book => searchResults.Contains(int.Parse(book.ID)));
-                List<Book> results = selectedBooks.ToList();
-                borrower.DisplayLibrary(results);
-                Console.ReadLine();
-            }
-
-
+                Console.Clear();
+                Console.WriteLine("===== SEARCH BY CONTENT SUMMARY =====");
+                Console.WriteLine("Enter content to search : ");
+                string query = Console.ReadLine();
+                List<Book> isbnBook = books.Where(x => x.ISBN.Equals(query)).ToList();
+                if (isbnBook.Count() > 0 )
+                {
+                    borrower.DisplayLibrary(isbnBook);
+                }
+                else
+                {
+                    var searchResults = TFIDF.Search(query, documentVectors, tfidf);
+                    var selectedBooks = books.Where(book => searchResults.Contains(int.Parse(book.ID)));
+                    List<Book> results = selectedBooks.ToList();
+                    borrower.DisplayLibrary(results);
+                }
+                Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
+                userInput = Console.ReadKey().KeyChar;
+                if (userInput != '1')
+                    exitSearch = true;
+            } while (!exitSearch);
         }
     }
-
 }
