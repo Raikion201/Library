@@ -26,7 +26,7 @@ namespace Library
         }
 
         // Read all borrower from CSV file
-        // example read data: John Doe johndoe@gmail.com 75
+        // example read data: John Doe johndoe@gmail.com 
         public static List<Borrower> ReadBorrowersFromCSV(string filePath)
         {
             List<Borrower> borrowers = new List<Borrower>();
@@ -46,16 +46,6 @@ namespace Library
 
                         List<Book> borrowedBooks = new List<Book>(); 
 
-                        // Start from index 2 to read book IDs
-                        // Because index 0 is name, index 1 is contact info
-                        for (int i = 2; i < data.Length; i++)
-                        {
-                            string bookId = data[i];
-                            Book book = Book.GetBookById(bookId);
-                            if (book != null)
-                                borrowedBooks.Add(book);
-                        }
-
                         Borrower borrower = new Borrower(name, contactInfo, borrowedBooks); 
                         borrowers.Add(borrower);
                     }
@@ -68,26 +58,40 @@ namespace Library
             return borrowers;
         }
 
+        // Write all borrower to CSV file
+        public static void WriteBorrowersToCSV(List<Borrower> borrowers, string filePath)
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filePath))
+                {
+                    foreach (var borrower in borrowers)
+                    {
+                        string line = $"{borrower.Name},{borrower.ContactInformation}";
+                        writer.WriteLine(line);
+                    }
+                }
+                Console.WriteLine($"Borrower information written to {filePath}.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while writing Borrower information: {ex.Message}");
+            }
+        }
+
         // Display a borrower's information
         public void DisplayBorrowerInfo() {
             Console.WriteLine($"{Name,-25} {ContactInformation,-25}");
         }
 
-        // // Display a borrower's history log
-        // public void DisplayBorrowerInfo() {
-        //     Console.WriteLine(" ");
-        //     Console.WriteLine(new string('-', 200));
-        //     Console.WriteLine("{0,-20} {1,-20} {2,-20} {3,-20}",
-        //         "Name", "Contact Information", "Borrower ID", "Number of Borrowed Books");
-        //     Console.WriteLine(new string('-', 200));
-        //     Console.WriteLine($"{Name,-20} {ContactInformation,-20} {BorrowerID,-20} {HistoryLog.Count,-20}");
-        // }
-
         // Borrow book
+        // If the book is available and the borrower has not borrowed it yet, borrow it
+        // A borrower can borrow a certain book only once
+        // And due date is 1 day from the time they borrow the book
         public void BorrowBook(Borrower borrower, Book book) 
         {
-            if (book.Availability == true) 
-            {
+            if (book.Availability == true && !HasBorrowedBook(book))
+            {   
                 book.Quantity--;
                 if (book.Quantity == 0) book.Availability = false;
                 book.BorrowStatus = true;
@@ -97,10 +101,20 @@ namespace Library
                 book.Borrowers.Add(this);
                 borrower.BorrowedBooks.Add(book);
 
-                // Add history log, borrow date is today, return date is 1 days from today
                 HistoryLog.Add(new HistoryLog(this, book, DateTime.Now, DateTime.Now.AddDays(1)));
-                
+
+                Console.WriteLine("Borrowed successfully!");
             }
+            else 
+            {
+                Console.WriteLine("You has already been borrowed this book. Please remember to return it in time.");
+            }
+        }
+
+        // Helper method to check if a borrower has borrowed a book
+        public bool HasBorrowedBook(Book book)
+        {
+            return BorrowedBooks.Contains(book);
         }
 
         // Return book
@@ -119,6 +133,8 @@ namespace Library
                 // Remove the book from the borrower
                 book.Borrowers.Remove(borrower);
                 borrower.BorrowedBooks.Remove(book);
+
+                Console.WriteLine("Book returned successfully!");
             }
             // Remove the log record from the borrower
             // If we don't remove it, the borrower will have a list of log records that are already returned
@@ -130,6 +146,47 @@ namespace Library
         {
             Borrower foundBorrower = borrowers.FirstOrDefault(borrower => borrower.Name == borrowerName);
             return foundBorrower; // Return the found Borrower object or null if not found
+        }
+
+        // This function is use for updating data when we start the program
+        public void UpdateBorrowedBooksFromCSV(string borrowFilePath, string returnFilePath, List<Book> books, Borrower borrower)
+        {
+            // Read data from CSV file for borrowed books
+            string[] borrowLines = File.ReadAllLines(borrowFilePath);
+
+            // Read data from CSV file for returned books
+            string[] returnLines = File.ReadAllLines(returnFilePath);
+
+            // Create a list to store returned books
+            List<string> returnedBooks = new List<string>();
+            foreach (string line in returnLines)
+            {
+                string[] parts = line.Split(',');
+                if (parts.Length >= 2 && parts[0].Trim() == borrower.Name)
+                {
+                    returnedBooks.Add(parts[1].Trim());
+                }
+            }
+
+            // Update the list of borrowed books for borrower base on their returned books
+            foreach (string borrowLine in borrowLines)
+            {
+                string[] parts = borrowLine.Split(',');
+                if (parts.Length >= 2 && parts[0].Trim() == borrower.Name)
+                {
+                    string bookName = parts[1].Trim();
+                    // Check if the book is in the returned books list
+                    if (!returnedBooks.Contains(bookName))
+                    {
+                        // Find the book in the list of books by its title
+                        Book foundBook = books.Find(book => book.Title == bookName);
+                        if (foundBook != null)
+                        {
+                            borrower.BorrowedBooks.Add(foundBook);
+                        }
+                    }
+                }
+            }
         }
     }
 }
