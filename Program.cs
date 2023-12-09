@@ -23,7 +23,7 @@ namespace Library
             var books = Book.ReadBooksFromCSV(storePath);
             var borrowers = Borrower.ReadBorrowersFromCSV(borrowerPath);
             var borrowLogs = HistoryLog.ReadBorrowLogFromCSV(borrowHistoryPath, borrowers, books);
-            var returnLogs = HistoryLog.ReadBorrowLogFromCSV(returnHistoryPath, borrowers, books);
+            var returnLogs = HistoryLog.ReadReturnLogFromCSV(returnHistoryPath, borrowers, books);
 
             // The menu
             Console.WriteLine("Welcome to the Library Management System!");
@@ -462,12 +462,12 @@ namespace Library
                             Console.WriteLine("Enter the name of the borrower who wants to return a book:");
                             borrowerName = Console.ReadLine();
 
-                            // Tìm người mượn dựa trên tên
+                            // Find the borrower in the list by name
                             Borrower selectedBorrower = borrowers.FirstOrDefault(borrower => borrower.Name.Equals(borrowerName, StringComparison.OrdinalIgnoreCase));
 
                             if (selectedBorrower != null)
                             {
-                                // Kiểm tra xem lịch sử mượn sách của người dùng đã được khởi tạo chưa
+                                // Check if the borrower has any borrowing history
                                 if (selectedBorrower.HistoryLog != null)
                                 {
                                     List<HistoryLog> borrowedBooks = selectedBorrower.HistoryLog.ToList();
