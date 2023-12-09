@@ -10,7 +10,7 @@ namespace Library
     {
         // Relative path to the file
         // This is not implemented yet
-        private const string accountPath = @"D:/coding/Library/Library/DOC/ACCOUNT/AccountList.txt";
+        // private const string accountPath = @"D:/coding/Library/Library/DOC/ACCOUNT/AccountList.txt";
 
         // List of all books in the library
         public void DisplayLibrary(List<Book> books)
@@ -55,5 +55,21 @@ namespace Library
             }
         }
 
+            public List<Book> SearchBooks(List<Book> books, string keyword)
+            {
+                List<Book> foundBooks = new List<Book>();
+
+                foreach (Book book in books)
+                {
+                    if (book.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                        book.Author.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                        book.Genre.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                    {
+                        foundBooks.Add(book);
+                    }
+                }
+
+                return foundBooks;
+            }
     }
 }
