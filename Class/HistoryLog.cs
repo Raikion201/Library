@@ -168,5 +168,130 @@ namespace Library
             }
         }
 
+        public void DisplayLogsByBorrower(List<HistoryLog> historyLogs, string borrowerName)
+        {
+            var logsByBorrower = historyLogs.Where(log => log.Borrower.Name.Equals(borrowerName, StringComparison.OrdinalIgnoreCase));
+
+            if (logsByBorrower.Any())
+            {
+                Console.WriteLine($"Logs for borrower '{borrowerName}':");
+                Console.WriteLine(new string('-', 100));
+                Console.WriteLine("{0,-20} {1,-30} {2,-25} {3,-25}",
+                                    "Borrower", "Title", "Borrow Date", "Due Date");
+                Console.WriteLine(new string('-', 100));
+                foreach (var log in logsByBorrower)
+                {
+                    var borrower = log.Borrower.Name.PadRight(20);
+                    var title = log.Book.Title.PadRight(30);
+                    var borrowDate = log.BorrowDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+                    var returnDate = log.ReturnDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+
+                    Console.WriteLine($"{borrower} {title} {borrowDate} {returnDate}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"No logs found for borrower '{borrowerName}'.");
+            }
+        }
+
+        public void DisplayLogsByBookTitle(List<HistoryLog> historyLogs, string bookTitle)
+        {
+            var logsByBookTitle = historyLogs.Where(log => log.Book.Title.Equals(bookTitle, StringComparison.OrdinalIgnoreCase));
+
+            if (logsByBookTitle.Any())
+            {
+                Console.WriteLine($"Logs for book '{bookTitle}':");
+                Console.WriteLine(new string('-', 100));
+                Console.WriteLine("{0,-20} {1,-30} {2,-25} {3,-25}",
+                                    "Borrower", "Title", "Borrow Date", "Due Date");
+                Console.WriteLine(new string('-', 100));
+                foreach (var log in logsByBookTitle)
+                {
+                    var borrower = log.Borrower.Name.PadRight(20);
+                    var title = log.Book.Title.PadRight(30);
+                    var borrowDate = log.BorrowDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+                    var returnDate = log.ReturnDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+
+                    Console.WriteLine($"{borrower} {title} {borrowDate} {returnDate}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"No logs found for book '{bookTitle}'.");
+            }
+        }
+
+        public void DisplayLogsByDate(List<HistoryLog> historyLogs, DateTime date)
+        {
+            var logsByDate = historyLogs.Where(log => log.BorrowDate.Date == date.Date || log.ReturnDate.Date == date.Date);
+
+            if (logsByDate.Any())
+            {
+                Console.WriteLine($"Logs for date '{date:dd/MM/yyyy}':");
+                Console.WriteLine(new string('-', 100));
+                Console.WriteLine("{0,-20} {1,-30} {2,-25} {3,-25}",
+                                    "Borrower", "Title", "Borrow Date", "Due Date");
+                Console.WriteLine(new string('-', 100));
+                foreach (var log in logsByDate)
+                {
+                    var borrower = log.Borrower.Name.PadRight(20);
+                    var title = log.Book.Title.PadRight(30);
+                    var borrowDate = log.BorrowDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+                    var returnDate = log.ReturnDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+
+                    Console.WriteLine($"{borrower} {title} {borrowDate} {returnDate}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"No logs found for date '{date:dd/MM/yyyy}'.");
+            }
+        }
+
+        public void DisplayLateReturn(List<HistoryLog> borrowLogs, List<HistoryLog> returnLogs)
+        {
+            Console.WriteLine("Late Returns:");
+            Console.WriteLine(new string('-', 100));
+            Console.WriteLine("{0,-20} {1,-30} {2,-25} {3,-25}",
+                                "Borrower", "Title", "Return Date", "Current Date");
+            Console.WriteLine(new string('-', 100));
+
+            DateTime currentDate = DateTime.Now;
+
+            foreach (var borrowLog in borrowLogs)
+            {
+                DateTime returnDate = borrowLog.ReturnDate;
+
+                // Check if the current date is later than the return date
+                if (currentDate > returnDate)
+                {
+                    // Check if the book has been returned
+                    if (!BookReturned(borrowLog, returnLogs))
+                    {
+                        var borrower = borrowLog.Borrower.Name.PadRight(20);
+                        var title = borrowLog.Book.Title.PadRight(30);
+                        var returnDateString = returnDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+                        var currentDateString = currentDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+
+                        Console.WriteLine($"{borrower} {title} {returnDateString} {currentDateString}");
+                    }
+                }
+            }
+        }
+
+        // Helper method to check if a book has been returned
+        private bool BookReturned(HistoryLog log, List<HistoryLog> historyLogs)
+        {
+            foreach (var returnLog in historyLogs)
+            {
+                if (returnLog.Borrower.Name == log.Borrower.Name && returnLog.Book.Title == log.Book.Title)
+                {
+                    return true; // If the book has been returned, return true
+                }
+            }
+            return false; // Else return false
+        }
+
     }
 }
