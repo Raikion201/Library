@@ -65,7 +65,7 @@ namespace Library
                             break;
                         case 3:
                             Console.Clear();
-                            SearchMenu(books,tfidf,documentVectors);
+                            SearchMenu(books, tfidf, documentVectors);
                             break;
                         case 0:
                             Console.Clear();
@@ -548,18 +548,29 @@ namespace Library
                 }
             }
         }
-        static void SearchMenu(List<Book> books, TFIDF tfidf,double[][] documentVectors)
+        static void SearchMenu(List<Book> books, TFIDF tfidf, double[][] documentVectors)
         {
             var borrower = new Borrower();
             // Use LINQ to find the books with the same IDs
             // Convert the result to an array
             Console.WriteLine("Enter your search : ");
             string query = Console.ReadLine();
-            var searchResults = TFIDF.Search(query, documentVectors, tfidf);
-            var selectedBooks = books.Where(book => searchResults.Contains(int.Parse(book.ID)));
-            List<Book> results = selectedBooks.ToList();
-            borrower.DisplayLibrary(results);
-            Console.ReadLine();
+            List<Book> isbnBook = books.Where(x => x.ISBN.Equals(query)).ToList();
+            if (isbnBook.Count() > 0 )
+            {
+                borrower.DisplayLibrary(isbnBook);
+                Console.ReadLine();
+
+            }
+            else
+            {
+                var searchResults = TFIDF.Search(query, documentVectors, tfidf);
+                var selectedBooks = books.Where(book => searchResults.Contains(int.Parse(book.ID)));
+                List<Book> results = selectedBooks.ToList();
+                borrower.DisplayLibrary(results);
+                Console.ReadLine();
+            }
+
 
         }
     }
