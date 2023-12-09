@@ -69,6 +69,31 @@ namespace Library
 			return books;
 		}
 
+		// Write all book data to a CSV file
+		// In format: ID,Title,Author,Genre,ISBN,Quantity,Availability,BorrowStatus
+		public static void WriteBooksToCSV(List<Book> books, string filePath)
+		{
+			try
+			{
+				using (var writer = new System.IO.StreamWriter(filePath))
+				{
+					foreach (var book in books)
+					{
+						// Format the book data into a CSV row
+						string bookData = $"{book.ID},{book.Title},{book.Author},{book.Genre},{book.ISBN},{book.Quantity},{book.Availability},{book.BorrowStatus}";
+
+						// Write the formatted data to the CSV file
+						writer.WriteLine(bookData);
+					}
+				}
+				Console.WriteLine("Book data has been successfully written to the CSV file.");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"An error occurred while writing to the file: {ex.Message}");
+			}
+		}
+
 		// Display a book's information
 		public void DisplayBookInfo(Book book)
 		{
@@ -76,21 +101,20 @@ namespace Library
 		}
 
 		// Get a book by its ID
-		public static Book GetBookById(string bookId)
+		public static Book GetBookById(string bookID)
 		{
 			List<Book> books = new List<Book>(); 
 
 			// Find the book with the given ID
-			Book book = books.FirstOrDefault(b => b.ID == bookId);
-			
+			Book book = books.FirstOrDefault(b => b.ID == bookID);
 			return book; // Return the found Book object or null if not found
 		}
 
 		// Get a book by its title
 		public static Book GetBookByTitle(string bookTitle, List<Book> books)
 		{
-			Book foundBook = books.FirstOrDefault(book => book.Title == bookTitle);
-			return foundBook; // Return the found Book object or null if not found
+			Book book = books.FirstOrDefault(book => book.Title == bookTitle);
+			return book; // Return the found Book object or null if not found
 		}
 	}
 }
