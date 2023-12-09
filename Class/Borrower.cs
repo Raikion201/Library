@@ -57,13 +57,6 @@ namespace Library
                         }
 
                         Borrower borrower = new Borrower(name, contactInfo, borrowedBooks); 
-
-                        // Borrow the books when reading from CSV
-                        // Currently, the books are not borrowed yet
-                        // Still bugs here
-                        foreach (Book book in borrowedBooks)
-                            borrower.BorrowBook(borrower, book);
-                        
                         borrowers.Add(borrower);
                     }
                 }
