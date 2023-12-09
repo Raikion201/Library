@@ -14,8 +14,12 @@ namespace Library
         public void AddBook(List<Book> books)
         {   
             int newID;
-            Console.WriteLine("Enter the book's title: ");
-            string newTitle = Console.ReadLine()!;
+            Console.WriteLine("Enter the book's title (Don't add comma): ");
+            string newTitle;
+            do 
+            {
+                newTitle = Console.ReadLine()!;
+            } while (newTitle != null && !newTitle.Contains(","));
 
             // Check if the book with the same title already exists, then we just need to add the quantity
             if (books.Any(book => book.Title == newTitle)) {
@@ -110,9 +114,25 @@ namespace Library
             }
         }
 
-        // Still thinking if it needs to be implemented
-        public void DeleteBook(List<Book> books) {
-            
+        // Delete a book from the list
+        public void DeleteBook(List<Book> books, string titleToDelete)
+        {
+            if (BookExists(books, titleToDelete))
+            {
+                Book bookToDelete = books.Find(book => book.Title.Equals(titleToDelete, StringComparison.OrdinalIgnoreCase));
+                books.Remove(bookToDelete);
+                Console.WriteLine($"Book '{titleToDelete}' has been deleted.");
+            }
+            else
+            {
+                Console.WriteLine($"Book '{titleToDelete}' not found.");
+            }
+        }
+
+        // Helper method to check if a book exists in the list
+        public bool BookExists(List<Book> books, string titleToCheck)
+        {
+            return books.Any(book => book.Title.Equals(titleToCheck, StringComparison.OrdinalIgnoreCase));
         }
 
         public void EditBook(List<Book> books)
@@ -128,7 +148,11 @@ namespace Library
                 Console.WriteLine("Book found. Enter new information (leave blank to keep current value): ");
 
                 Console.WriteLine("Enter the new title: ");
-                string newTitle = Console.ReadLine();
+                string newTitle;
+                do 
+                {
+                    newTitle = Console.ReadLine();
+                } while (!newTitle.Contains(","));
                 if (!string.IsNullOrEmpty(newTitle))
                     bookToEdit.Title = newTitle;
 
