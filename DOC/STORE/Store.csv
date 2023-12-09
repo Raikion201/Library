@@ -1,4 +1,4 @@
-1,1984,George Orwell,Classics,978-0451524935,10,True,False
+﻿1,1984,George Orwell,Classics,978-0451524935,10,True,False
 2,A Brief History of Time,Stephen Hawking,Science,978-0553380163,10,True,False
 3,A Higher Loyalty: Truth Lies and Leadership,James Comey,Politics,978-1250192455,10,True,False
 4,A Promised Land,Barack Obama,Politics,978-1524763169,10,True,False
@@ -12,7 +12,7 @@
 12,Cosmos,Carl Sagan,Science,978-0345539434,10,True,False
 13,Dark Places,Gillian Flynn,Thriller,978-0307341570,10,True,False
 14,Dracula,Bram Stoker,Classics,978-1503276857,10,True,False
-15,Dune,Frank Herbert,ScienceFiction,978-0441172719,10,True,False
+15,Dune,Frank Herbert,ScienceFiction,978-0441172719,,True,True
 16,Einstein,Walter Isaacson,Biography,978-0743264730,10,True,False
 17,Emma,Jane Austen,Romance,978-0141439587,10,True,False
 18,Flow,Mihaly Csikszentmihalyi,Psychology,978-0061339202,10,True,False
