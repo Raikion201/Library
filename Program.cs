@@ -16,21 +16,24 @@ namespace Library
         {
             // Relative path to the CSV files
             // When run the program it will load all data before the menu is show
-            
-            // For Visual Studio Code user only
-            // string rootPath = @"D:/coding/Library/Library/";
-            // string storePath = Path.Combine(rootPath, "DOC/STORE/Store.csv");
-            // string borrowerPath = Path.Combine(rootPath, "DOC/BORROWER/BorrowerInfo.csv");
-            // string borrowHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/BorrowHistory.xls");
-            // string returnHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/ReturnHistory.xls");
-            // string documentsPath = Path.Combine(rootPath, "DOC/DETAIL/");
 
-            // For Visual Studio users only
-            string storePath = "../../../DOC/STORE/Store.csv";
-            string borrowerPath = "../../../DOC/BORROWER/BorrowerInfo.csv";
-            string borrowHistoryPath = "../../../DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
-            string returnHistoryPath = "../../../DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
-            string documentsPath = "../../../DOC/DETAIL/";
+            // For Visual Studio Code user only
+            string rootPath = @"D:/coding/Library/Library/";
+            string storePath = Path.Combine(rootPath, "DOC/STORE/Store.csv");
+            string borrowerPath = Path.Combine(rootPath, "DOC/BORROWER/BorrowerInfo.csv");
+            string borrowHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/BorrowHistory.xls");
+            string returnHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/ReturnHistory.xls");
+            string documentsPath = Path.Combine(rootPath, "DOC/DETAIL/");
+
+            // // For Visual Studio users only
+            // string storePath = "../../../DOC/STORE/Store.csv";
+            // string borrowerPath = "../../../DOC/BORROWER/BorrowerInfo.csv";
+            // string borrowHistoryPath = "../../../DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
+            // string returnHistoryPath = "../../../DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
+            // string documentsPath = "../../../DOC/DETAIL/";
+
+            // When you run the program, you need to uncomment the code related to your IDE
+            // And also uncomment the relative path to the CSV files in 'Display transaction history'
 
             // Prepare data
             var e = new Execution();
@@ -307,6 +310,19 @@ namespace Library
                                     // Display transaction history
                                     case 3:
                                         Console.Clear();
+
+                                        // For Visual Studio Code user only
+                                        string rootPath = @"D:/coding/Library/Library/";
+                                        string borrowHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/BorrowHistory.xls");
+                                        string returnHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/ReturnHistory.xls");
+
+                                        // // For Visual Studio users only
+                                        // string borrowHistoryPath = "../../../DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
+                                        // string returnHistoryPath = "../../../DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
+
+                                        borrowLogs = HistoryLog.ReadBorrowLogFromCSV(borrowHistoryPath, borrowers, books);
+                                        returnLogs = HistoryLog.ReadReturnLogFromCSV(returnHistoryPath, borrowers, books);
+                                        
                                         bool exitTransactionLogDisplay = false;  
                                         do 
                                         {
@@ -627,6 +643,7 @@ namespace Library
                                         else
                                         {
                                             Console.WriteLine("This book is not available.");
+                                            Console.ReadKey();
                                         }
                                     }
                                     else
