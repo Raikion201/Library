@@ -49,7 +49,7 @@ namespace Library
                 case "Availability":
                     return books.OrderBy(book => book.Availability);
                 case "BorrowStatus":
-                    return books.OrderBy(book => book.BorrowStatus);
+                    return books.OrderByDescending(book => book.BorrowStatus);
                 default:
                     return books;
             }
