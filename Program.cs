@@ -16,21 +16,21 @@ namespace Library
         {
             // Relative path to the CSV files
             // When run the program it will load all data before the menu is show
+            
             // For Visual Studio Code user only
-            string rootPath = @"D:/coding/Library/Library/";
-            string storePath = Path.Combine(rootPath, "DOC/STORE/Store.csv");
-            string borrowerPath = Path.Combine(rootPath, "DOC/BORROWER/BorrowerInfo.csv");
-            string borrowHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/BorrowHistory.xls");
-            string returnHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/ReturnHistory.xls");
-            string documentsPath = Path.Combine(rootPath, "DOC/DETAIL/");
+            // string rootPath = @"D:/coding/Library/Library/";
+            // string storePath = Path.Combine(rootPath, "DOC/STORE/Store.csv");
+            // string borrowerPath = Path.Combine(rootPath, "DOC/BORROWER/BorrowerInfo.csv");
+            // string borrowHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/BorrowHistory.xls");
+            // string returnHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/ReturnHistory.xls");
+            // string documentsPath = Path.Combine(rootPath, "DOC/DETAIL/");
 
-            // For Visual Studio users
-            // When use remember to comment code above
-            // string storePath = "../../../DOC/STORE/Store.csv";
-            // string borrowerPath = "../../../DOC/BORROWER/BorrowerInfo.csv";
-            // string borrowHistoryPath = "../../../DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
-            // string returnHistoryPath = "../../../DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
-            // string documentsPath = "../../../DOC/DETAIL/";
+            // For Visual Studio users only
+            string storePath = "../../../DOC/STORE/Store.csv";
+            string borrowerPath = "../../../DOC/BORROWER/BorrowerInfo.csv";
+            string borrowHistoryPath = "../../../DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
+            string returnHistoryPath = "../../../DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
+            string documentsPath = "../../../DOC/DETAIL/";
 
             // Prepare data
             var e = new Execution();
