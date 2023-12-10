@@ -152,19 +152,35 @@ namespace Library
         // Display all borrow log
         public void DisplayBorrowedBooks(List<HistoryLog> historyLogs)
         {
+            Console.WriteLine(new string('-', 160));
+            Console.WriteLine("{0,-20} {1,-90} {2,-25} {3,-25}",
+                                "Borrower", "Title", "Borrow Date", "Due Date");
+            Console.WriteLine(new string('-', 160));
             foreach (var log in historyLogs)
             {
-                Console.WriteLine($"{log.Borrower.Name},{log.Book.Title},{log.BorrowDate:dd/MM/yyyy h:mm:ss tt},{log.ReturnDate:dd/MM/yyyy h:mm:ss tt}");
+                var borrower = log.Borrower.Name.PadRight(20);
+                var title = log.Book.Title.PadRight(90);
+                var borrowDate = log.BorrowDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+                var returnDate = log.ReturnDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+
+                Console.WriteLine($"{borrower} {title} {borrowDate} {returnDate}");
             }
         }
 
         // Display all return log
         public void DisplayReturnedBooks(List<HistoryLog> historyLogs)
         {
+            Console.WriteLine(new string('-', 140));
+            Console.WriteLine("{0,-20} {1,-90} {2,-25}",
+                                "Borrower", "Title", "Return Date");
+            Console.WriteLine(new string('-', 140));
             foreach (var log in historyLogs)
             {
-                string returnDate = log.ReturnDate.ToString("dd/MM/yyyy h:mm:ss tt");
-                Console.WriteLine($"{log.Borrower.Name},{log.Book.Title},{returnDate}");
+                var borrower = log.Borrower.Name.PadRight(20);
+                var title = log.Book.Title.PadRight(90);
+                var returnDate = log.ReturnDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
+
+                Console.WriteLine($"{borrower} {title} {returnDate}");
             }
         }
 
@@ -175,14 +191,14 @@ namespace Library
             if (logsByBorrower.Any())
             {
                 Console.WriteLine($"Logs for borrower '{borrowerName}':");
-                Console.WriteLine(new string('-', 100));
-                Console.WriteLine("{0,-20} {1,-30} {2,-25} {3,-25}",
+                Console.WriteLine(new string('-', 160));
+                Console.WriteLine("{0,-20} {1,-90} {2,-25} {3,-25}",
                                     "Borrower", "Title", "Borrow Date", "Due Date");
-                Console.WriteLine(new string('-', 100));
+                Console.WriteLine(new string('-', 160));
                 foreach (var log in logsByBorrower)
                 {
                     var borrower = log.Borrower.Name.PadRight(20);
-                    var title = log.Book.Title.PadRight(30);
+                    var title = log.Book.Title.PadRight(90);
                     var borrowDate = log.BorrowDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
                     var returnDate = log.ReturnDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
 
@@ -202,14 +218,14 @@ namespace Library
             if (logsByBookTitle.Any())
             {
                 Console.WriteLine($"Logs for book '{bookTitle}':");
-                Console.WriteLine(new string('-', 100));
-                Console.WriteLine("{0,-20} {1,-30} {2,-25} {3,-25}",
+                Console.WriteLine(new string('-', 160));
+                Console.WriteLine("{0,-20} {1,-90} {2,-25} {3,-25}",
                                     "Borrower", "Title", "Borrow Date", "Due Date");
-                Console.WriteLine(new string('-', 100));
+                Console.WriteLine(new string('-', 160));
                 foreach (var log in logsByBookTitle)
                 {
                     var borrower = log.Borrower.Name.PadRight(20);
-                    var title = log.Book.Title.PadRight(30);
+                    var title = log.Book.Title.PadRight(90);
                     var borrowDate = log.BorrowDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
                     var returnDate = log.ReturnDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
 
@@ -229,14 +245,14 @@ namespace Library
             if (logsByDate.Any())
             {
                 Console.WriteLine($"Logs for date '{date:dd/MM/yyyy}':");
-                Console.WriteLine(new string('-', 100));
-                Console.WriteLine("{0,-20} {1,-30} {2,-25} {3,-25}",
+                Console.WriteLine(new string('-', 160));
+                Console.WriteLine("{0,-20} {1,-90} {2,-25} {3,-25}",
                                     "Borrower", "Title", "Borrow Date", "Due Date");
-                Console.WriteLine(new string('-', 100));
+                Console.WriteLine(new string('-', 160));
                 foreach (var log in logsByDate)
                 {
                     var borrower = log.Borrower.Name.PadRight(20);
-                    var title = log.Book.Title.PadRight(30);
+                    var title = log.Book.Title.PadRight(90);
                     var borrowDate = log.BorrowDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
                     var returnDate = log.ReturnDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
 
@@ -252,10 +268,10 @@ namespace Library
         public void DisplayLateReturn(List<HistoryLog> borrowLogs, List<HistoryLog> returnLogs)
         {
             Console.WriteLine("Late Returns:");
-            Console.WriteLine(new string('-', 100));
-            Console.WriteLine("{0,-20} {1,-30} {2,-25} {3,-25}",
+            Console.WriteLine(new string('-', 160));
+            Console.WriteLine("{0,-20} {1,-90} {2,-25} {3,-25}",
                                 "Borrower", "Title", "Return Date", "Current Date");
-            Console.WriteLine(new string('-', 100));
+            Console.WriteLine(new string('-', 160));
 
             DateTime currentDate = DateTime.Now;
 
@@ -270,7 +286,7 @@ namespace Library
                     if (!BookReturned(borrowLog, returnLogs))
                     {
                         var borrower = borrowLog.Borrower.Name.PadRight(20);
-                        var title = borrowLog.Book.Title.PadRight(30);
+                        var title = borrowLog.Book.Title.PadRight(90);
                         var returnDateString = returnDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
                         var currentDateString = currentDate.ToString("dd/MM/yyyy h:mm:ss tt").PadRight(25);
 

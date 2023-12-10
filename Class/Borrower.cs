@@ -90,7 +90,7 @@ namespace Library
         // And due date is 1 day from the time they borrow the book
         public void BorrowBook(Borrower borrower, Book book) 
         {
-            if (book.Availability == true && !HasBorrowedBook(book))
+            if (book.Availability == true)
             {   
                 book.Quantity--;
                 if (book.Quantity == 0) book.Availability = false;
@@ -104,10 +104,6 @@ namespace Library
                 HistoryLog.Add(new HistoryLog(this, book, DateTime.Now, DateTime.Now.AddDays(1)));
 
                 Console.WriteLine("Borrowed successfully!");
-            }
-            else 
-            {
-                Console.WriteLine("You has already been borrowed this book. Please remember to return it in time.");
             }
         }
 
@@ -133,8 +129,6 @@ namespace Library
                 // Remove the book from the borrower
                 book.Borrowers.Remove(borrower);
                 borrower.BorrowedBooks.Remove(book);
-
-                Console.WriteLine("Book returned successfully!");
             }
             // Remove the log record from the borrower
             // If we don't remove it, the borrower will have a list of log records that are already returned

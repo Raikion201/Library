@@ -77,7 +77,7 @@ namespace Library
 
                         case 2:
                             Console.Clear();
-                            BorrowerMenu(books, borrowers, borrowLogs, returnLogs);
+                            BorrowerMenu(books, borrowers);
                             break;
 
                         case 3:
@@ -141,7 +141,10 @@ namespace Library
         /// <summary>
         /// The librarian menu
         /// </summary>
-        /// <param name="books"></param>
+        /// <param name="books">List of books</param>
+        /// <param name="borrowers">List of borrowers</param>
+        /// <param name="borrowLogs">List of borrow history logs</param>
+        /// <param name="returnLogs">List of return history logs</param>
         static void LibrarianMenu(List<Book> books, List<Borrower> borrowers, List<HistoryLog> borrowLogs, List<HistoryLog> returnLogs)
         {
             bool exit = false;
@@ -304,137 +307,144 @@ namespace Library
                                     // Display transaction history
                                     case 3:
                                         Console.Clear();
-                                        HistoryLog historyLog = new HistoryLog();
-                                        Console.WriteLine("===== DISPLAY TRANSACTION HISTORY =====");
-                                        Console.WriteLine("1. Display borrowed book history");
-                                        Console.WriteLine("2. Display return book history");
-                                        Console.WriteLine("3. Display transaction history by keyword");
-                                        Console.WriteLine("4. Display late return");
-                                        Console.WriteLine("0. Return to librarian menu");
-                                        Console.WriteLine("Enter your choice:");
-
-                                        if (int.TryParse(Console.ReadLine(), out choice))
+                                        bool exitTransactionLogDisplay = false;  
+                                        do 
                                         {
-                                            switch (choice)
+                                            Console.Clear();
+                                            HistoryLog historyLog = new HistoryLog();
+                                            Console.WriteLine("===== DISPLAY TRANSACTION HISTORY =====");
+                                            Console.WriteLine("1. Display borrowed book history");
+                                            Console.WriteLine("2. Display return book history");
+                                            Console.WriteLine("3. Display transaction history by keyword");
+                                            Console.WriteLine("4. Display late return");
+                                            Console.WriteLine("0. Return to librarian menu");
+                                            Console.WriteLine("Enter your choice:");
+
+                                        
+                                            if (int.TryParse(Console.ReadLine(), out choice))
                                             {
-                                                case 1:
-                                                    Console.Clear();
-                                                    Console.WriteLine("===== BORROWED BOOK HISTORY =====");
-                                                    historyLog.DisplayBorrowedBooks(borrowLogs);
-                                                    Console.ReadKey();
-                                                    break;
-
-                                                case 2:
-                                                    Console.Clear();
-                                                    Console.WriteLine("===== RETURN BOOK HISTORY =====");
-                                                    historyLog.DisplayReturnedBooks(returnLogs);
-                                                    Console.ReadKey();
-                                                    break;
-                                                
-                                                case 3:
-                                                    bool exitLogSearch = false;
-                                                    do
-                                                    {
+                                                switch (choice)
+                                                {
+                                                    case 1:
                                                         Console.Clear();
-                                                        Console.WriteLine("===== SEARCH TRANSACTION HISTORY BY KEYWORD =====");
-                                                        Console.WriteLine("1. By borrower name");
-                                                        Console.WriteLine("2. By book title");
-                                                        Console.WriteLine("3. By date");
-                                                        Console.WriteLine("0. Return to librarian menu");
-                                                        Console.WriteLine("Enter your choice:");
-                                                        if (int.TryParse(Console.ReadLine(), out choice))
+                                                        Console.WriteLine("===== BORROWED BOOK HISTORY =====");
+                                                        historyLog.DisplayBorrowedBooks(borrowLogs);
+                                                        Console.ReadKey();
+                                                        break;
+
+                                                    case 2:
+                                                        Console.Clear();
+                                                        Console.WriteLine("===== RETURN BOOK HISTORY =====");
+                                                        historyLog.DisplayReturnedBooks(returnLogs);
+                                                        Console.ReadKey();
+                                                        break;
+                                                    
+                                                    case 3:
+                                                        bool exitLogSearch = false;
+                                                        do
                                                         {
-                                                            switch (choice)
+                                                            Console.Clear();
+                                                            Console.WriteLine("===== SEARCH TRANSACTION HISTORY BY KEYWORD =====");
+                                                            Console.WriteLine("1. By borrower name");
+                                                            Console.WriteLine("2. By book title");
+                                                            Console.WriteLine("3. By date");
+                                                            Console.WriteLine("0. Return to librarian menu");
+                                                            Console.WriteLine("Enter your choice:");
+                                                            if (int.TryParse(Console.ReadLine(), out choice))
                                                             {
-                                                                case 1:
-                                                                    Console.Clear();
-                                                                    bool exitSearch = false;
-                                                                    do
-                                                                    {
-                                                                    Console.WriteLine("Enter borrower name: ");
-                                                                    string borrowerName = Console.ReadLine();
-                                                                    historyLog.DisplayLogsByBorrower(borrowLogs, borrowerName);
-                                                                    Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
-                                                                    userInput = Console.ReadKey().KeyChar;
-                                                                    if (userInput != '1')
-                                                                        exitSearch = true;
-                                                                    } while(!exitSearch);
-                                                                    break;
+                                                                switch (choice)
+                                                                {
+                                                                    case 1:
+                                                                        Console.Clear();
+                                                                        bool exitSearch = false;
+                                                                        do
+                                                                        {
+                                                                            Console.WriteLine("Enter borrower name: ");
+                                                                            string borrowerName = Console.ReadLine();
+                                                                            historyLog.DisplayLogsByBorrower(borrowLogs, borrowerName);
+                                                                            Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
+                                                                            userInput = Console.ReadKey().KeyChar;
+                                                                        if (userInput != '1')
+                                                                            exitSearch = true;
+                                                                        } while(!exitSearch);
+                                                                        break;
 
-                                                                case 2:
-                                                                    Console.Clear();
-                                                                    exitSearch = false;
-                                                                    do
-                                                                    {
-                                                                    Console.WriteLine("Enter book title: ");
-                                                                    string bookTitle = Console.ReadLine();
-                                                                    historyLog.DisplayLogsByBookTitle(borrowLogs, bookTitle);
-                                                                    Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
-                                                                    userInput = Console.ReadKey().KeyChar;
-                                                                    if (userInput != '1')
-                                                                        exitSearch = true;
-                                                                    } while(!exitSearch);
-                                                                    break;
+                                                                    case 2:
+                                                                        Console.Clear();
+                                                                        exitSearch = false;
+                                                                        do
+                                                                        {
+                                                                            Console.WriteLine("Enter book title: ");
+                                                                            string bookTitle = Console.ReadLine();
+                                                                            historyLog.DisplayLogsByBookTitle(borrowLogs, bookTitle);
+                                                                            Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
+                                                                            userInput = Console.ReadKey().KeyChar;
+                                                                        if (userInput != '1')
+                                                                            exitSearch = true;
+                                                                        } while(!exitSearch);
+                                                                        break;
 
-                                                                case 3:
-                                                                    Console.Clear();
-                                                                    exitSearch = false;
-                                                                    do
-                                                                    {
-                                                                    Console.WriteLine("Enter date (dd/MM/yyyy): ");
-                                                                    string dateString = Console.ReadLine();
-                                                                    if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
-                                                                    {
-                                                                        historyLog.DisplayLogsByDate(borrowLogs, date);
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        Console.WriteLine("Invalid date format. Please enter date in the format dd/MM/yyyy.");
-                                                                    }
-                                                                    Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
-                                                                    userInput = Console.ReadKey().KeyChar;
-                                                                    if (userInput != '1')
-                                                                        exitSearch = true;
-                                                                    } while(!exitSearch);
-                                                                    break;
+                                                                    case 3:
+                                                                        Console.Clear();
+                                                                        exitSearch = false;
+                                                                        do
+                                                                        {
+                                                                            Console.WriteLine("Enter date (dd/MM/yyyy): ");
+                                                                            string dateString = Console.ReadLine();
+                                                                            if (DateTime.TryParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                                                                            {
+                                                                                historyLog.DisplayLogsByDate(borrowLogs, date);
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                Console.WriteLine("Invalid date format. Please enter date in the format dd/MM/yyyy.");
+                                                                            }
+                                                                            Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
+                                                                            userInput = Console.ReadKey().KeyChar;
+                                                                            if (userInput != '1')
+                                                                                exitSearch = true;
+                                                                        } while(!exitSearch);
+                                                                        break;
 
-                                                                case 0:
-                                                                    Console.Clear();
-                                                                    exitLogSearch = true;
-                                                                    break;
+                                                                    case 0:
+                                                                        Console.Clear();
+                                                                        exitLogSearch = true;
+                                                                        break;
 
-                                                                default:
-                                                                    Console.WriteLine("Invalid choice. Please enter a valid number.");
-                                                                    break;
+                                                                    default:
+                                                                        Console.WriteLine("Invalid choice. Please enter a valid number.");
+                                                                        break;
+                                                                }
                                                             }
-                                                        }
-                                                        else
-                                                        {
-                                                            Console.WriteLine("Invalid input. Please enter a valid number.");
-                                                        }
-                                                    } while (!exitLogSearch);
-                                                    break;
+                                                            else
+                                                            {
+                                                                Console.WriteLine("Invalid input. Please enter a valid number.");
+                                                            }
+                                                        } while (!exitLogSearch);
+                                                        break;
 
-                                                case 4:
-                                                    Console.Clear();
-                                                    Console.WriteLine("===== LATE RETURN =====");
-                                                    historyLog.DisplayLateReturn(borrowLogs, returnLogs);
-                                                    Console.ReadKey();
-                                                    break;
+                                                    case 4:
+                                                        Console.Clear();
+                                                        Console.WriteLine("===== LATE RETURN =====");
+                                                        historyLog.DisplayLateReturn(borrowLogs, returnLogs);
+                                                        Console.ReadKey();
+                                                        break;
 
-                                                case 0:
-                                                    Console.Clear();
-                                                    break;
+                                                    case 0:
+                                                        Console.Clear();
+                                                        exitTransactionLogDisplay = true;
+                                                        break;
 
-                                                default:
-                                                    Console.WriteLine("Invalid choice. Please enter a valid number.");
-                                                    break;
+                                                    default:
+                                                        Console.WriteLine("Invalid choice. Please enter a valid number.");
+                                                        break;
+                                                }
                                             }
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Invalid input. Please enter a valid number.");
-                                        }
+                                            else
+                                            {
+                                                Console.WriteLine("Invalid input. Please enter a valid number.");
+                                            }
+                                        } while (!exitTransactionLogDisplay);
                                         break;
 
                                     // Return to librarian menu
@@ -535,10 +545,11 @@ namespace Library
         }
 
         /// <summary>
-        /// The borrower menu
+        /// The librarian menu
         /// </summary>
-        /// <param name="books"></param>
-        static void BorrowerMenu(List<Book> books, List<Borrower> borrowers, List<HistoryLog> borrowLogs, List<HistoryLog> returnLogs)
+        /// <param name="books">List of books</param>
+        /// <param name="borrowers">List of borrowers</param>
+        static void BorrowerMenu(List<Book> books, List<Borrower> borrowers)
         {
             // Relative path to the CSV files
             string borrowHistoryPath = @"D:/coding/Library/Library/DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
@@ -592,10 +603,19 @@ namespace Library
                                     if (bookToBorrow != null)
                                     {
                                         if (bookToBorrow.Availability)
-                                        {
-                                            borrowerToBorrow.BorrowBook(borrowerToBorrow, bookToBorrow);
-                                            HistoryLog historyLog = new HistoryLog(borrowerToBorrow, bookToBorrow, DateTime.Now, DateTime.Now.AddDays(1));
-                                            historyLog.ExportBorrowLogToCSV(borrowHistoryPath);
+                                        {   
+                                            if (!borrowerToBorrow.HasBorrowedBook(bookToBorrow))
+                                            {
+                                                borrowerToBorrow.BorrowBook(borrowerToBorrow, bookToBorrow);
+                                                HistoryLog historyLog = new HistoryLog(borrowerToBorrow, bookToBorrow, DateTime.Now, DateTime.Now.AddDays(1));
+                                                historyLog.ExportBorrowLogToCSV(borrowHistoryPath);
+                                            }
+                                            else
+                                            {   
+                                                Console.WriteLine(" ");
+                                                Console.WriteLine("You have already borrowed this book. Please remember to return it on time.");
+                                            }
+
                                             Console.WriteLine(" ");
                                             Console.WriteLine("Press 1 to borrow another book. Press any key to return to borrower menu.");
                                             char userInput = Console.ReadKey().KeyChar;
@@ -636,9 +656,13 @@ namespace Library
                                 if (selectedBorrower.BorrowedBooks.Any())
                                 {
                                     Console.WriteLine("List of books borrowed by the user:");
+                                    Console.WriteLine(new string('-', 160));
+                                    Console.WriteLine("{0,-5} {1,-90} {2,-30} {3,-18} {4,-15}",
+                                        "ID", "Title", "Author", "Genre", "ISBN", "Quantity", "Availability", "BorrowStatus");
+                                    Console.WriteLine(new string('-', 160));
                                     foreach (var book in selectedBorrower.BorrowedBooks)
                                     {
-                                        Console.WriteLine($"Book ID: {book.ID}, Title: {book.Title}");
+                                        Console.WriteLine($"{book.ID,-5} {book.Title,-90} {book.Author,-30} {book.Genre,-18} {book.ISBN,-15}");
                                     }
 
                                     Console.Write("Enter the ID of the book to return: ");
@@ -649,7 +673,10 @@ namespace Library
                                         if (bookToReturn != null)
                                         {
                                             selectedBorrower.ReturnBook(selectedBorrower, bookToReturn);
+                                            Console.WriteLine("Book returned successfully!");
                                             // Update history log or other necessary actions here
+                                            HistoryLog historyLog = new HistoryLog(selectedBorrower, bookToReturn, DateTime.Now);
+                                            historyLog.ExportReturnLogToCSV(returnHistoryPath);
                                         }
                                         else
                                         {

@@ -11,6 +11,8 @@ namespace Library.Class.TFIDF
         private List<string> _documents;
         private Dictionary<string, double> _idfScores;
 
+        public TFIDF(){}
+
         public TFIDF(List<string> documents)
         {
             _documents = documents;
@@ -137,10 +139,5 @@ namespace Library.Class.TFIDF
 
             return sortedIndices;
         }
-
-
     }
-
-
-
 }
