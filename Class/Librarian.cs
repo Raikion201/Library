@@ -19,7 +19,7 @@ namespace Library
             do 
             {
                 newTitle = Console.ReadLine()!;
-            } while (newTitle != null && !newTitle.Contains(","));
+            } while (newTitle != null && newTitle.Contains(","));
 
             // Check if the book with the same title already exists, then we just need to add the quantity
             if (books.Any(book => book.Title == newTitle)) {
@@ -84,15 +84,10 @@ namespace Library
                     Console.WriteLine("Enter the book's ISBN: ");
                     newISBN = Console.ReadLine()!;
                     
-                    if (newISBN.Length == 14)
-                    {
-                        if (newISBN.All(char.IsDigit) && newISBN[3] == '-') 
-                            break;
-                        else
-                            Console.WriteLine("Invalid ISBN format. Please enter a valid 13-digit ISBN in the format '###-############'.");
-                    }
+                    if (newISBN.Length == 14 && newISBN[3] == '-')
+                        break;
                     else
-                        Console.WriteLine("Invalid ISBN length. ISBN should be 14 characters long.");
+                        Console.WriteLine("Invalid ISBN format. Please enter a valid 13-digit ISBN in the format '###-##########'.");
                 } while (true);
 
                 // Get the quantity from the user
@@ -110,6 +105,8 @@ namespace Library
 
                 // Add the new book to the list
                 books.Add(new Book(newID.ToString(), newTitle, newAuthor, newGenre, newISBN, newQuantity, true, false));
+                Console.WriteLine("Book added successfully!");
+                Console.ReadKey();
                 return;
             }
         }
@@ -122,10 +119,12 @@ namespace Library
                 Book bookToDelete = books.Find(book => book.Title.Equals(titleToDelete, StringComparison.OrdinalIgnoreCase));
                 books.Remove(bookToDelete);
                 Console.WriteLine($"Book '{titleToDelete}' has been deleted.");
+                Console.ReadKey();
             }
             else
             {
                 Console.WriteLine($"Book '{titleToDelete}' not found.");
+                Console.ReadKey();
             }
         }
 
@@ -152,7 +151,7 @@ namespace Library
                 do 
                 {
                     newTitle = Console.ReadLine();
-                } while (!newTitle.Contains(","));
+                } while (newTitle.Contains(","));
                 if (!string.IsNullOrEmpty(newTitle))
                     bookToEdit.Title = newTitle;
 
@@ -171,12 +170,10 @@ namespace Library
                         Console.WriteLine("Invalid genre. Genre remains unchanged.");
                 }
 
-                Console.WriteLine("Enter the new ISBN: ");
+                Console.WriteLine("Enter the new ISBN (ISBN should be 14 characters long and in the format '###-##########'): ");
                 string newISBN = Console.ReadLine();
                 if (!string.IsNullOrEmpty(newISBN) && newISBN.Length == 14 && newISBN.All(char.IsDigit) && newISBN[3] == '-')
                     bookToEdit.ISBN = newISBN;
-                else 
-                    Console.WriteLine("Invalid ISBN. ISBN remains unchanged. ISBN should be 14 characters long and in the format '###-############'.");
 
                 Console.WriteLine("Enter the new quantity: ");
                 string newQuantityInput = Console.ReadLine();
@@ -184,10 +181,13 @@ namespace Library
                     bookToEdit.Quantity = newQuantity;
 
                 Console.WriteLine("Book information updated.");
+                Console.ReadKey();
             }
             else
+            {
                 Console.WriteLine("Book not found.");
-            
+                Console.ReadKey();
+            }
         }
 
         public void AddBorrower(List<Borrower> borrowers)
@@ -215,6 +215,7 @@ namespace Library
             // Add the new borrower to the list
             borrowers.Add(new Borrower(borrowerName, borrowerEmail, new List<Book>()));
             Console.WriteLine("Borrower added successfully!");
+            Console.ReadKey();
         }
 
         // Helper method to validate email format
@@ -243,10 +244,13 @@ namespace Library
             {
                 borrowers.Remove(borrowerToDelete);
                 Console.WriteLine("Borrower deleted successfully!");
+                Console.ReadKey();
             }
             else
+            {
                 Console.WriteLine("Borrower not found.");
-            
+                Console.ReadKey();
+            }  
         }
 
         public void EditBorrower(List<Borrower> borrowers)
@@ -272,9 +276,13 @@ namespace Library
                     borrowerToEdit.ContactInformation = newContactInfo;
 
                 Console.WriteLine("Borrower information updated.");
+                Console.ReadKey();
             }
             else
+            {
                 Console.WriteLine("Borrower not found.");
+                Console.ReadKey();
+            }
         }
     }
 }
