@@ -87,7 +87,7 @@ namespace Library
                             string password = Console.ReadLine();
                             if (password == "admin") {
                                 Console.Clear();
-                                LibrarianMenu(books, borrowers, borrowLogs, returnLogs);
+                                LibrarianMenu(books, borrowers, borrowLogs, returnLogs, borrowHistoryPath, returnHistoryPath);
                             }
                             else {
                                 Console.Clear();
@@ -167,7 +167,7 @@ namespace Library
         /// <param name="borrowers">List of borrowers</param>
         /// <param name="borrowLogs">List of borrow history logs</param>
         /// <param name="returnLogs">List of return history logs</param>
-        static void LibrarianMenu(List<Book> books, List<Borrower> borrowers, List<HistoryLog> borrowLogs, List<HistoryLog> returnLogs)
+        static void LibrarianMenu(List<Book> books, List<Borrower> borrowers, List<HistoryLog> borrowLogs, List<HistoryLog> returnLogs, string borrowHistoryPath, string returnHistoryPath)
         {
             bool exit = false;
             while (!exit)
@@ -329,15 +329,6 @@ namespace Library
                                     // Display transaction history
                                     case 3:
                                         Console.Clear();
-
-                                        // For Visual Studio Code user only
-                                        string rootPath = @"D:/coding/Library/Library/";
-                                        string borrowHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/BorrowHistory.xls");
-                                        string returnHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/ReturnHistory.xls");
-
-                                        // // For Visual Studio users only
-                                        // string borrowHistoryPath = "../../../DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
-                                        // string returnHistoryPath = "../../../DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
 
                                         borrowLogs = HistoryLog.ReadBorrowLogFromCSV(borrowHistoryPath, borrowers, books);
                                         returnLogs = HistoryLog.ReadReturnLogFromCSV(returnHistoryPath, borrowers, books);
