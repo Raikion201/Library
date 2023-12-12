@@ -79,10 +79,8 @@ namespace Library
 				{
 					foreach (var book in books)
 					{
-						// Format the book data into a CSV row
 						string bookData = $"{book.ID},{book.Title},{book.Author},{book.Genre},{book.ISBN},{book.Quantity},{book.Availability},{book.BorrowStatus}";
 
-						// Write the formatted data to the CSV file
 						writer.WriteLine(bookData);
 					}
 				}
@@ -94,18 +92,11 @@ namespace Library
 			}
 		}
 
-		// Display a book's information
-		public void DisplayBookInfo(Book book)
-		{
-			Console.WriteLine($"{book.ID,-5} {book.Title,-90} {book.Author,-30} {book.Genre,-18} {book.ISBN,-15} {book.Quantity,-10} {book.Availability,-12} {book.BorrowStatus,-10}");
-		}
-
 		// Get a book by its ID
 		public static Book GetBookById(string bookID)
 		{
 			List<Book> books = new List<Book>(); 
-
-			// Find the book with the given ID
+		
 			Book book = books.FirstOrDefault(b => b.ID == bookID);
 			return book; // Return the found Book object or null if not found
 		}

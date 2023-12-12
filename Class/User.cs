@@ -8,12 +8,8 @@ namespace Library
 {
     public class User
     {
-        // Relative path to the file
-        // This is not implemented yet
-        // private const string accountPath = @"D:/coding/Library/Library/DOC/ACCOUNT/AccountList.txt";
-
         // List of all books in the library
-        public void DisplayLibrary(List<Book> books)
+        public virtual void DisplayLibrary(List<Book> books)
         {
             Console.WriteLine(new string('-', 200));
             Console.WriteLine("{0,-5} {1,-90} {2,-30} {3,-18} {4,-15} {5,-10} {6,-10} {7,-10}",
@@ -22,7 +18,7 @@ namespace Library
             
             foreach (var book in books)
             {
-                Console.WriteLine($"{book.ID,-5} {book.Title,-90} {book.Author,-30} {book.Genre,-18} {book.ISBN,-15} {book.Quantity,-10} {book.Availability,-12} {book.BorrowStatus,-10}");
+                Console.WriteLine($"{book.ID,-5} {book.Title,-90} {book.Author,-30} {book.Genre,-18} {book.ISBN,-15} {book.Quantity,8} {book.Availability,-12} {book.BorrowStatus,-10}");
             }
         }
 
@@ -55,21 +51,21 @@ namespace Library
             }
         }
 
-            public List<Book> SearchBooks(List<Book> books, string keyword)
+        public List<Book> SearchBooks(List<Book> books, string keyword)
+        {
+            List<Book> foundBooks = new List<Book>();
+
+            foreach (Book book in books)
             {
-                List<Book> foundBooks = new List<Book>();
-
-                foreach (Book book in books)
+                if (book.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    book.Author.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    book.Genre.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase))
                 {
-                    if (book.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        book.Author.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        book.Genre.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase))
-                    {
-                        foundBooks.Add(book);
-                    }
+                    foundBooks.Add(book);
                 }
-
-                return foundBooks;
             }
+
+            return foundBooks;
+        }
     }
 }

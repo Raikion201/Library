@@ -23,13 +23,13 @@ namespace Library
 
             // Check if the book with the same title already exists, then we just need to add the quantity
             if (books.Any(book => book.Title == newTitle)) {
-                // Find the book with the same title
                 var existingBook = books.FirstOrDefault(book => book.Title == newTitle);
                 
                 // Get the quantity from the user
                 // If the user enters a negative number, keep asking until they enter a positive number
                 Console.WriteLine("The book with the same title already exists. Please enter the quantity to add: ");
                 int newQuantity;
+
                 bool validInput = false;
                 while (!validInput)
                 {
@@ -41,7 +41,6 @@ namespace Library
                     else
                         Console.WriteLine("Please enter a valid positive number for the quantity.");
                 }
-                
                 return;
             }
 
@@ -202,6 +201,9 @@ namespace Library
                 return;
             }
 
+            Console.WriteLine("Enter the borrower's password: ");
+            string borrowerPassword = Console.ReadLine()!;
+
             Console.WriteLine("Enter the borrower's email (Gmail): ");
             string borrowerEmail = Console.ReadLine()!;
 
@@ -213,7 +215,7 @@ namespace Library
             }
 
             // Add the new borrower to the list
-            borrowers.Add(new Borrower(borrowerName, borrowerEmail, new List<Book>()));
+            borrowers.Add(new Borrower(borrowerName, borrowerPassword, borrowerEmail, new List<Book>()));
             Console.WriteLine("Borrower added successfully!");
             Console.ReadKey();
         }

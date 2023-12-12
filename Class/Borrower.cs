@@ -9,6 +9,7 @@ namespace Library
     public class Borrower : User
     {
         public string Name { get; set; }
+        public string Password { get; set; }
         public string ContactInformation { get; set; }
         public List<Book> BorrowedBooks { get; private set; } // List of borrowed books
 		public List<HistoryLog> HistoryLog { get; private set; }
@@ -17,9 +18,10 @@ namespace Library
         public Borrower(){}
 
         // Constructor with parameters
-        public Borrower(string name, string contactInformation, List<Book> borrowedBooks)
+        public Borrower(string name, string password, string contactInformation, List<Book> borrowedBooks = null)
         {
             Name = name;
+            Password = password;
             ContactInformation = contactInformation;
             BorrowedBooks = borrowedBooks ?? new List<Book>();
             HistoryLog = new List<HistoryLog>();
@@ -42,11 +44,10 @@ namespace Library
                         string[] data = parser.ReadFields();
                         
                         string name = data[0];
-                        string contactInfo = data[1];
+                        string password = data[1];
+                        string contactInfo = data[2];
 
-                        List<Book> borrowedBooks = new List<Book>(); 
-
-                        Borrower borrower = new Borrower(name, contactInfo, borrowedBooks); 
+                        Borrower borrower = new Borrower(name, password, contactInfo); 
                         borrowers.Add(borrower);
                     }
                 }
@@ -67,7 +68,7 @@ namespace Library
                 {
                     foreach (var borrower in borrowers)
                     {
-                        string line = $"{borrower.Name},{borrower.ContactInformation}";
+                        string line = $"{borrower.Name},{borrower.Password},{borrower.ContactInformation}";
                         writer.WriteLine(line);
                     }
                 }
@@ -82,6 +83,19 @@ namespace Library
         // Display a borrower's information
         public void DisplayBorrowerInfo() {
             Console.WriteLine($"{Name,-25} {ContactInformation,-25}");
+        }
+
+        public override void DisplayLibrary(List<Book> books) 
+        {
+            Console.WriteLine(new string('-', 171));
+            Console.WriteLine("{0,-5} {1,-90} {2,-30} {3,-18} {4,-15} {5,-10}",
+                "ID", "Title", "Author", "Genre", "ISBN", "Quantity");
+            Console.WriteLine(new string('-', 171));
+            
+            foreach (var book in books)
+            {
+                Console.WriteLine($"{book.ID,-5} {book.Title,-90} {book.Author,-30} {book.Genre,-18} {book.ISBN,-15} {book.Quantity,8}");
+            }
         }
 
         // Borrow book
@@ -145,14 +159,10 @@ namespace Library
         // This function is use for updating data when we start the program
         public void UpdateBorrowedBooksFromCSV(string borrowFilePath, string returnFilePath, List<Book> books, Borrower borrower)
         {
-            // Read data from CSV file for borrowed books
             string[] borrowLines = File.ReadAllLines(borrowFilePath);
-
-            // Read data from CSV file for returned books
             string[] returnLines = File.ReadAllLines(returnFilePath);
-
-            // Create a list to store returned books
             List<string> returnedBooks = new List<string>();
+
             foreach (string line in returnLines)
             {
                 string[] parts = line.Split(',');
@@ -169,10 +179,10 @@ namespace Library
                 if (parts.Length >= 2 && parts[0].Trim() == borrower.Name)
                 {
                     string bookName = parts[1].Trim();
-                    // Check if the book is in the returned books list
+
                     if (!returnedBooks.Contains(bookName))
                     {
-                        // Find the book in the list of books by its title
+
                         Book foundBook = books.Find(book => book.Title == bookName);
                         if (foundBook != null)
                         {
@@ -180,6 +190,45 @@ namespace Library
                         }
                     }
                 }
+            }
+        }
+
+        // Login function
+        public bool Login(string userName, string password)
+        {
+            if (userName == Name && password == Password) 
+            {
+                Console.WriteLine("Login successful!");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Incorrect username or password. Login failed.");
+                return false;
+            }
+        }
+
+        // Change password
+        public void ChangePassword(string userName, string currentPassword, string newPassword)
+        {
+            if (userName == Name && currentPassword == Password) // Check if the username and current password match
+            {
+                // Validate the new password format (6 digits)
+                bool validNewPassword = newPassword.Length == 6 && newPassword.All(char.IsDigit);
+
+                if (validNewPassword)
+                {
+                    Password = newPassword;
+                    Console.WriteLine("Password changed successfully!");
+                }
+                else
+                {
+                    Console.WriteLine("New password should be a 6-digit number.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid username or password!");
             }
         }
     }

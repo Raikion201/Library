@@ -1,4 +1,12 @@
-﻿using System;
+﻿// Purpose: The main program of the Library Management System.
+// Remember to uncomment the relative path to the CSV files depent on your IDE
+// If you use another IDE, you need to change the relative path to the CSV files or update it with absolute path
+
+// *****************************************
+// * DEFAULT PASSWORD FOR LIBRARIAN: admin *
+// *****************************************
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,19 +26,19 @@ namespace Library
             // When run the program it will load all data before the menu is show
 
             // For Visual Studio Code user only
-            string rootPath = @"D:/coding/Library/Library/";
-            string storePath = Path.Combine(rootPath, "DOC/STORE/Store.csv");
-            string borrowerPath = Path.Combine(rootPath, "DOC/BORROWER/BorrowerInfo.csv");
-            string borrowHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/BorrowHistory.xls");
-            string returnHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/ReturnHistory.xls");
-            string documentsPath = Path.Combine(rootPath, "DOC/DETAIL/");
+            // string rootPath = @"D:/coding/Library/Library/";
+            // string storePath = Path.Combine(rootPath, "DOC/STORE/Store.csv");
+            // string borrowerPath = Path.Combine(rootPath, "DOC/BORROWER/BorrowerInfo.csv");
+            // string borrowHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/BorrowHistory.xls");
+            // string returnHistoryPath = Path.Combine(rootPath, "DOC/TRANSACTION_HISTORY/ReturnHistory.xls");
+            // string documentsPath = Path.Combine(rootPath, "DOC/DETAIL/");
 
-            // // For Visual Studio users only
-            // string storePath = "../../../DOC/STORE/Store.csv";
-            // string borrowerPath = "../../../DOC/BORROWER/BorrowerInfo.csv";
-            // string borrowHistoryPath = "../../../DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
-            // string returnHistoryPath = "../../../DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
-            // string documentsPath = "../../../DOC/DETAIL/";
+            // For Visual Studio users only
+            string storePath = "../../../DOC/STORE/Store.csv";
+            string borrowerPath = "../../../DOC/BORROWER/BorrowerInfo.csv";
+            string borrowHistoryPath = "../../../DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
+            string returnHistoryPath = "../../../DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
+            string documentsPath = "../../../DOC/DETAIL/";
 
             // When you run the program, you need to uncomment the code related to your IDE
             // And also uncomment the relative path to the CSV files in 'Display transaction history'
@@ -75,12 +83,23 @@ namespace Library
                     {
                         case 1:
                             Console.Clear();
-                            LibrarianMenu(books, borrowers, borrowLogs, returnLogs);
+                            Console.WriteLine("ENTER PASSWORD: ");  
+                            string password = Console.ReadLine();
+                            if (password == "admin") {
+                                Console.Clear();
+                                LibrarianMenu(books, borrowers, borrowLogs, returnLogs);
+                            }
+                            else {
+                                Console.Clear();
+                                Console.WriteLine("LOGIN FAILED");
+                                Console.ReadKey();
+                                break;
+                            }
                             break;
 
                         case 2:
                             Console.Clear();
-                            BorrowerMenu(books, borrowers);
+                            BorrowerMenu(books, borrowers, borrowerPath, borrowHistoryPath, returnHistoryPath);
                             break;
 
                         case 3:
@@ -565,11 +584,8 @@ namespace Library
         /// </summary>
         /// <param name="books">List of books</param>
         /// <param name="borrowers">List of borrowers</param>
-        static void BorrowerMenu(List<Book> books, List<Borrower> borrowers)
+        static void BorrowerMenu(List<Book> books, List<Borrower> borrowers, string borrowerPath, string borrowHistoryPath, string returnHistoryPath)
         {
-            // Relative path to the CSV files
-            string borrowHistoryPath = @"D:/coding/Library/Library/DOC/TRANSACTION_HISTORY/BorrowHistory.xls";
-            string returnHistoryPath = @"D:/coding/Library/Library/DOC/TRANSACTION_HISTORY/ReturnHistory.xls";
             bool exit = false;
             while (!exit)
             {
@@ -580,6 +596,7 @@ namespace Library
                 Console.WriteLine("1. Display the library");
                 Console.WriteLine("2. Borrow book");
                 Console.WriteLine("3. Return book");
+                Console.WriteLine("4. Change password");
                 Console.WriteLine("0. Return to main menu");
                 Console.WriteLine("Enter your choice:");
                 int choice;
@@ -597,12 +614,16 @@ namespace Library
                         // Borrow book
                         case 2:
                             Console.Clear();
-                            // Get borrower's information
+                        
                             Console.WriteLine("Enter your name: ");
                             string borrowerName = Console.ReadLine()!;
-                            bool borrowerExists = borrowers.Any(borrower => borrower.Name == borrowerName);
+                            Console.WriteLine("Enter your password: ");
+                            string borrowerPassword = Console.ReadLine()!;
 
-                            if (borrowerExists)
+                            // Check login credentials
+                            var loggedInBorrower = borrowers.FirstOrDefault(borrower => borrower.Login(borrowerName, borrowerPassword));
+
+                            if (loggedInBorrower != null)
                             {
                                 bool borrowerExits = false;
                                 while (!borrowerExits)
@@ -652,32 +673,31 @@ namespace Library
                                     }
                                 }
                             }
-                            else
-                            {
-                                Console.WriteLine("Borrower not found. Please ask librarian to register first.");
-                            }
                             Console.ReadKey();
                             break;
 
                         // Return book
                         case 3:
                             Console.Clear();
-                            Console.WriteLine("Enter the name of the borrower who wants to return a book:");
-                            borrowerName = Console.ReadLine();
+                            // Get borrower's information
+                            Console.WriteLine("Enter your name: ");
+                            string borrowerNameReturn = Console.ReadLine()!;
+                            Console.WriteLine("Enter your password: ");
+                            string borrowerPasswordReturn = Console.ReadLine()!;
 
-                            // Find the borrower in the list by name
-                            Borrower selectedBorrower = borrowers.FirstOrDefault(borrower => borrower.Name.Equals(borrowerName, StringComparison.OrdinalIgnoreCase));
+                            // Check login credentials
+                            var loggedInBorrowerReturn = borrowers.FirstOrDefault(borrower => borrower.Login(borrowerNameReturn, borrowerPasswordReturn));
 
-                            if (selectedBorrower != null)
+                            if (loggedInBorrowerReturn != null)
                             {
-                                if (selectedBorrower.BorrowedBooks.Any())
+                                if (loggedInBorrowerReturn.BorrowedBooks.Any())
                                 {
                                     Console.WriteLine("List of books borrowed by the user:");
                                     Console.WriteLine(new string('-', 160));
                                     Console.WriteLine("{0,-5} {1,-90} {2,-30} {3,-18} {4,-15}",
                                         "ID", "Title", "Author", "Genre", "ISBN", "Quantity", "Availability", "BorrowStatus");
                                     Console.WriteLine(new string('-', 160));
-                                    foreach (var book in selectedBorrower.BorrowedBooks)
+                                    foreach (var book in loggedInBorrowerReturn.BorrowedBooks)
                                     {
                                         Console.WriteLine($"{book.ID,-5} {book.Title,-90} {book.Author,-30} {book.Genre,-18} {book.ISBN,-15}");
                                     }
@@ -685,14 +705,14 @@ namespace Library
                                     Console.Write("Enter the ID of the book to return: ");
                                     if (int.TryParse(Console.ReadLine(), out int bookIdToReturn))
                                     {
-                                        var bookToReturn = selectedBorrower.BorrowedBooks.FirstOrDefault(book => book.ID == bookIdToReturn.ToString());
+                                        var bookToReturn = loggedInBorrowerReturn.BorrowedBooks.FirstOrDefault(book => book.ID == bookIdToReturn.ToString());
 
                                         if (bookToReturn != null)
                                         {
-                                            selectedBorrower.ReturnBook(selectedBorrower, bookToReturn);
+                                            loggedInBorrowerReturn.ReturnBook(loggedInBorrowerReturn, bookToReturn);
                                             Console.WriteLine("Book returned successfully!");
                                             // Update history log or other necessary actions here
-                                            HistoryLog historyLog = new HistoryLog(selectedBorrower, bookToReturn, DateTime.Now);
+                                            HistoryLog historyLog = new HistoryLog(loggedInBorrowerReturn, bookToReturn, DateTime.Now);
                                             historyLog.ExportReturnLogToCSV(returnHistoryPath);
                                         }
                                         else
@@ -710,11 +730,28 @@ namespace Library
                                     Console.WriteLine("The selected borrower hasn't borrowed any books.");
                                 }
                             }
+                            Console.ReadKey();
+                            break;
+
+                        case 4:
+                            Console.Clear();
+                            Console.WriteLine("Enter your name: ");
+                            string borrowerNameChangePassword = Console.ReadLine()!;
+                            Console.WriteLine("Enter your password: ");
+                            string borrowerPasswordChangePassword = Console.ReadLine()!;
+                            var loggedInBorrowerChangePassword = borrowers.FirstOrDefault(borrower => borrower.Login(borrowerNameChangePassword, borrowerPasswordChangePassword));
+                            if (loggedInBorrowerChangePassword != null)
+                            {
+                                Console.WriteLine(" ");
+                                Console.WriteLine("Enter your new password: ");
+                                string newPassword = Console.ReadLine()!;
+                                loggedInBorrowerChangePassword.ChangePassword(borrowerNameChangePassword, borrowerPasswordChangePassword, newPassword);
+                                Borrower.WriteBorrowersToCSV(borrowers, borrowerPath);
+                            }
                             else
                             {
-                                Console.WriteLine("Borrower not found. Please enter a valid borrower's name.");
+                                Console.WriteLine("Invalid name or password.");
                             }
-                            Console.ReadKey();
                             break;
 
                         case 0:
