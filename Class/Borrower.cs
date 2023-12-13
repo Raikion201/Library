@@ -203,7 +203,6 @@ namespace Library
             }
             else
             {
-                Console.WriteLine("Incorrect username or password. Login failed.");
                 return false;
             }
         }

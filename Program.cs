@@ -52,12 +52,12 @@ namespace Library
             var borrowers = Borrower.ReadBorrowersFromCSV(borrowerPath);
             var borrowLogs = HistoryLog.ReadBorrowLogFromCSV(borrowHistoryPath, borrowers, books);
             var returnLogs = HistoryLog.ReadReturnLogFromCSV(returnHistoryPath, borrowers, books);
-            
+
             // Update borrowed books for each borrower
             // Because when we turn off program, the borrowed books of each borrower will be reset to null
             // So we need to update it again, make sure we always keep the data
             foreach (var borrower in borrowers)
-            {   
+            {
                 Borrower newBorrower = new Borrower();
                 newBorrower.UpdateBorrowedBooksFromCSV(borrowHistoryPath, returnHistoryPath, books, borrower);
             }
@@ -83,13 +83,15 @@ namespace Library
                     {
                         case 1:
                             Console.Clear();
-                            Console.WriteLine("ENTER PASSWORD: ");  
+                            Console.WriteLine("ENTER PASSWORD: ");
                             string password = Console.ReadLine();
-                            if (password == "admin") {
+                            if (password == "admin")
+                            {
                                 Console.Clear();
                                 LibrarianMenu(books, borrowers, borrowLogs, returnLogs, borrowHistoryPath, returnHistoryPath);
                             }
-                            else {
+                            else
+                            {
                                 Console.Clear();
                                 Console.WriteLine("LOGIN FAILED");
                                 Console.ReadKey();
@@ -303,7 +305,7 @@ namespace Library
                                                 {
                                                     Console.WriteLine("Invalid input. Please enter a valid number.");
                                                 }
-                                            } while (!exitSort);                                    
+                                            } while (!exitSort);
                                         }
                                         else
                                         {
@@ -332,9 +334,9 @@ namespace Library
 
                                         borrowLogs = HistoryLog.ReadBorrowLogFromCSV(borrowHistoryPath, borrowers, books);
                                         returnLogs = HistoryLog.ReadReturnLogFromCSV(returnHistoryPath, borrowers, books);
-                                        
-                                        bool exitTransactionLogDisplay = false;  
-                                        do 
+
+                                        bool exitTransactionLogDisplay = false;
+                                        do
                                         {
                                             Console.Clear();
                                             HistoryLog historyLog = new HistoryLog();
@@ -346,7 +348,7 @@ namespace Library
                                             Console.WriteLine("0. Return to librarian menu");
                                             Console.WriteLine("Enter your choice:");
 
-                                        
+
                                             if (int.TryParse(Console.ReadLine(), out choice))
                                             {
                                                 switch (choice)
@@ -364,7 +366,7 @@ namespace Library
                                                         historyLog.DisplayReturnedBooks(returnLogs);
                                                         Console.ReadKey();
                                                         break;
-                                                    
+
                                                     case 3:
                                                         bool exitLogSearch = false;
                                                         do
@@ -390,9 +392,9 @@ namespace Library
                                                                             historyLog.DisplayLogsByBorrower(borrowLogs, borrowerName);
                                                                             Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
                                                                             userInput = Console.ReadKey().KeyChar;
-                                                                        if (userInput != '1')
-                                                                            exitSearch = true;
-                                                                        } while(!exitSearch);
+                                                                            if (userInput != '1')
+                                                                                exitSearch = true;
+                                                                        } while (!exitSearch);
                                                                         break;
 
                                                                     case 2:
@@ -405,9 +407,9 @@ namespace Library
                                                                             historyLog.DisplayLogsByBookTitle(borrowLogs, bookTitle);
                                                                             Console.WriteLine("\nPress 1 to search again. Press any key to return to search option.");
                                                                             userInput = Console.ReadKey().KeyChar;
-                                                                        if (userInput != '1')
-                                                                            exitSearch = true;
-                                                                        } while(!exitSearch);
+                                                                            if (userInput != '1')
+                                                                                exitSearch = true;
+                                                                        } while (!exitSearch);
                                                                         break;
 
                                                                     case 3:
@@ -429,7 +431,7 @@ namespace Library
                                                                             userInput = Console.ReadKey().KeyChar;
                                                                             if (userInput != '1')
                                                                                 exitSearch = true;
-                                                                        } while(!exitSearch);
+                                                                        } while (!exitSearch);
                                                                         break;
 
                                                                     case 0:
@@ -605,7 +607,7 @@ namespace Library
                         // Borrow book
                         case 2:
                             Console.Clear();
-                        
+
                             Console.WriteLine("Enter your name: ");
                             string borrowerName = Console.ReadLine()!;
                             Console.WriteLine("Enter your password: ");
@@ -614,7 +616,13 @@ namespace Library
                             // Check login credentials
                             var loggedInBorrower = borrowers.FirstOrDefault(borrower => borrower.Login(borrowerName, borrowerPassword));
 
-                            if (loggedInBorrower != null)
+                            if (loggedInBorrower == null)
+                            {
+                                Console.WriteLine("Login unsuccessfully. Your username or password is wrong ");
+                                Console.ReadLine();
+                                break;
+                            }
+                            else
                             {
                                 bool borrowerExits = false;
                                 while (!borrowerExits)
@@ -631,7 +639,7 @@ namespace Library
                                     if (bookToBorrow != null)
                                     {
                                         if (bookToBorrow.Availability)
-                                        {   
+                                        {
                                             if (!borrowerToBorrow.HasBorrowedBook(bookToBorrow))
                                             {
                                                 borrowerToBorrow.BorrowBook(borrowerToBorrow, bookToBorrow);
@@ -639,7 +647,7 @@ namespace Library
                                                 historyLog.ExportBorrowLogToCSV(borrowHistoryPath);
                                             }
                                             else
-                                            {   
+                                            {
                                                 Console.WriteLine(" ");
                                                 Console.WriteLine("You have already borrowed this book. Please remember to return it on time.");
                                             }
@@ -679,7 +687,13 @@ namespace Library
                             // Check login credentials
                             var loggedInBorrowerReturn = borrowers.FirstOrDefault(borrower => borrower.Login(borrowerNameReturn, borrowerPasswordReturn));
 
-                            if (loggedInBorrowerReturn != null)
+                            if (loggedInBorrowerReturn == null)
+                            {
+                                Console.WriteLine("Login unsuccessfully. Your username or password is wrong ");
+                                Console.ReadLine();
+                                break;
+                            }
+                            else
                             {
                                 if (loggedInBorrowerReturn.BorrowedBooks.Any())
                                 {
@@ -762,7 +776,7 @@ namespace Library
         }
 
         // Search books by keyword
-        static void SearchBooks(List<Book> books) 
+        static void SearchBooks(List<Book> books)
         {
             Console.Clear();
             bool exitSearch = false;
@@ -782,7 +796,7 @@ namespace Library
                     exitSearch = true;
             } while (!exitSearch);
         }
-        
+
         // Search books by content summary
         static void SearchSummary(List<Book> books, TFIDF tfidf, double[][] documentVectors)
         {
@@ -800,7 +814,7 @@ namespace Library
                 Console.WriteLine("Enter content to search : ");
                 string query = Console.ReadLine();
                 List<Book> isbnBook = books.Where(x => x.ISBN.Equals(query)).ToList();
-                if (isbnBook.Count() > 0 )
+                if (isbnBook.Count() > 0)
                 {
                     borrower.DisplayLibrary(isbnBook);
                 }
